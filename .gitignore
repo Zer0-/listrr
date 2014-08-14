@@ -1,0 +1,5 @@
+*egg-info
+*.pyc
+*~
+*.swp
+settings.local.json
