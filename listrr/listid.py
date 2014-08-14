@@ -7,4 +7,4 @@ def urlsafe_bytestring(n):
     return urlsafe_b64encode(bytestring)
 
 def gen_list_uuid(size):
-    return urlsafe_bytestring(3*size)
+    return urlsafe_bytestring(3*size).decode('ascii')

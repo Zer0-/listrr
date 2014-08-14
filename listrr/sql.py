@@ -16,13 +16,16 @@ INSERT INTO list_item (title, uuid) VALUES (%s, 0)
 RETURNING id
 """
 
-SAVE_POST = """
-INSERT INTO post (
+GET_ROOT_NODE = """
+SELECT id FROM list_item WHERE parent_id IS NULL
+"""
+
+ADD_LIST_ITEM = """
+INSERT INTO list_item (
     parent_id,
-    message,
-    image_filename,
-    image_identifier
-) VALUES (%s, %s, %s, %s)
+    uuid,
+    title
+) VALUES (%s, %s, %s)
 RETURNING id
 """
 
