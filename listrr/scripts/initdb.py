@@ -16,7 +16,7 @@ def create_table(db, settings):
     id_size = len(gen_list_uuid(id_size))
     with db.cursor as cursor:
         logging.info("Creating list items table if not exists...")
-        cursor.execute(CREATE_LIST_ITEM_TABLE, (id_size,))
+        cursor.execute(CREATE_LIST_ITEM_TABLE, (id_size, id_size))
         logging.info("OK")
 
 if __name__ == "__main__":

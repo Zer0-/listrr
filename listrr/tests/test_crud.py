@@ -1,5 +1,4 @@
 import unittest
-from listrr.sql import CREATE_ROOT_NODE
 from bricks import Settings
 from common_components.db import PostgresThreadPool, DatabaseComponent
 
@@ -7,6 +6,7 @@ from listrr.crud_api import (
     get_root_node,
     create_root_node,
     add_list_item,
+    get_list_tree,
 )
 
 def clear_list_table(db):
@@ -23,6 +23,9 @@ class TestCrud(unittest.TestCase):
         self.settings = settings
         self.uuid_size = settings['list_uuid_size']
 
+    def tearDown(self):
+        clear_list_table(self.db)
+
     def testRootNodeNonexist(self):
         self.assertEqual(get_root_node(self.db), None)
 
@@ -30,9 +33,6 @@ class TestCrud(unittest.TestCase):
         node_id = create_root_node(self.db, self.uuid_size)
         fetched_node_id = get_root_node(self.db)[0]
         self.assertEqual(node_id, fetched_node_id)
-
-        #teardown
-        clear_list_table(self.db)
 
     def testAddToplevelList(self):
         rootnode = create_root_node(self.db, self.uuid_size)
@@ -47,15 +47,49 @@ class TestCrud(unittest.TestCase):
         self.assertEqual(len(uuids), 4)
 
         with self.db.cursor as cursor:
-            cursor.execute("SELECT parent_id, title, uuid FROM list_item"
+            cursor.execute("SELECT parent_id, title, id FROM list_item"
                            " WHERE parent_id IS NOT NULL")
             results = cursor.fetchall()
         for pid, title, uuid in results:
             self.assertEqual(pid, rootnode)
             self.assertTrue(title.isdigit())
             self.assertTrue(uuid in uuids)
-        #teardown
-        clear_list_table(self.db)
+
+    def testAddNestedList(self):
+        rootnode = create_root_node(self.db, self.uuid_size)
+        list_id = add_list_item(
+            self.db,
+            self.uuid_size,
+            rootnode,
+            'root'
+        )
+        maxdepth = 4
+        add_count = 0
+        def deep_add(parent_id, n):
+            nonlocal add_count
+            if n < 1:
+                return
+            for i in range(3):
+                list_item_id = add_list_item(
+                    self.db,
+                    self.uuid_size,
+                    parent_id,
+                    str(n)*4 + str(i)
+                )
+                add_count += 1
+                deep_add(list_item_id, n-1)
+        deep_add(list_id, maxdepth)
+        tree = get_list_tree(self.db, list_id)[0]
+        self.assertEqual(tree.title, "root")
+        self.assertEqual(tree.id, list_id)
+        get_count = 0
+        def chk_tree(tree, depth):
+            nonlocal get_count
+            for li in tree:
+                self.assertTrue(li.title.startswith(str(maxdepth - depth)*4))
+                get_count += 1
+                chk_tree(li.replies, depth + 1)
+        chk_tree(tree.replies, 0)
 
     @classmethod
     def tearDownClass(self):
