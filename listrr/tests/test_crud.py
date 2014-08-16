@@ -7,6 +7,7 @@ from listrr.crud_api import (
     create_root_node,
     add_list_item,
     get_list_tree,
+    update_list_item_title,
 )
 
 def clear_list_table(db):
@@ -90,6 +91,18 @@ class TestCrud(unittest.TestCase):
                 get_count += 1
                 chk_tree(li.replies, depth + 1)
         chk_tree(tree.replies, 0)
+
+    def testUpdateTitle(self):
+        rootnode = create_root_node(self.db, self.uuid_size)
+        list_id = add_list_item(
+            self.db,
+            self.uuid_size,
+            rootnode,
+            'root'
+        )
+        update_list_item_title(self.db, list_id, "testupdate")
+        list_item = get_list_tree(self.db, list_id)[0]
+        self.assertEqual(list_item.title, "testupdate")
 
     @classmethod
     def tearDownClass(self):

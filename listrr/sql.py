@@ -32,6 +32,10 @@ WITH RECURSIVE t(id) AS (
 UPDATE list_item SET last_modified=DEFAULT WHERE id IN (SELECT id FROM t);
 """
 
+UPDATE_ITEM_TITLE = """
+UPDATE list_item SET title = %s WHERE id = %s
+"""
+
 GET_LIST_TREE = """
 WITH RECURSIVE t(
     id,

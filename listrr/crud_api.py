@@ -3,6 +3,7 @@ from listrr.sql import (
     GET_ROOT_NODE,
     ADD_LIST_ITEM,
     GET_LIST_TREE,
+    UPDATE_ITEM_TITLE,
 )
 from listrr.listid import gen_list_uuid
 
@@ -51,3 +52,7 @@ def get_list_tree(db, parent_id):
         cursor.execute(GET_LIST_TREE, (parent_id,))
         query_result = cursor.fetchall()
     return _build_list_tree(query_result)
+
+def update_list_item_title(db, list_id, newtitle):
+    with db.cursor as cursor:
+        cursor.execute(UPDATE_ITEM_TITLE, (newtitle, list_id))
