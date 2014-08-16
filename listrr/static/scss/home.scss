@@ -1,0 +1,23 @@
+@import "common/var";
+
+body{
+    background-color: $co_body_bg;
+    text-align: center;
+    padding-top: 4em;
+    color: $co_darkest;
+    font-family: sans-serif;
+}
+
+h1{
+    font-size: 5.5em;
+    margin-bottom: .3em;
+}
+
+span.tagline{
+    color: $co_gray;
+    font-size: 1.2em;
+}
+
+span.strong{
+    color: $co_strong;
+}

@@ -3,6 +3,7 @@ from setuptools import setup
 requires = [
     'bricks',
     'common_components',
+    'werkzeug'
 ]
 
 links = [

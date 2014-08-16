@@ -9,5 +9,8 @@
     "list_uuid_size": 10,
     "logfile_path": "/tmp",
     "debug": true,
-    "port": 8000
+    "port": 8000,
+    "served_static_url": "http://127.0.0.1:8888/",
+    "served_static_dir": "/tmp/served_static",
+    "static_buildout_dir": "/tmp/listrr"
 }
