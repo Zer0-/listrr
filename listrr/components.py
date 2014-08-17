@@ -8,8 +8,8 @@ from listrr.crud_api import ListApi
 class Homepage:
     requires_configured = ['static_manager']
     depends_on = [
-        Sass('homepage_style', asset='listrr:static/scss/home.scss'),
         SassLib('common_scss', asset='listrr:static/scss/common'),
+        Sass('homepage_style', asset='listrr:static/scss/home.scss'),
         StaticJs('jquery',     asset='listrr:static/js/jquery.js'),
         Coffee('form_watcher', asset='listrr:static/coffee/form_watcher.coffee'),
         Coffee('ajax_forms',   asset='listrr:static/coffee/ajax_forms.coffee'),
@@ -24,9 +24,15 @@ class Homepage:
         return {}
 
 class ListView:
-    depends_on = [ListApi]
+    requires_configured = ['static_manager']
+    depends_on = [
+        ListApi,
+        SassLib('common_scss', asset='listrr:static/scss/common'),
+        Sass('list_style', asset='listrr:static/scss/list.scss'),
+    ]
 
-    def __init__(self, listapi):
+    def __init__(self, static_manager, listapi, *static):
+        self.static_manager = static_manager
         self.listapi = listapi
 
     @mako_response('listrr:templates/list.mako')

@@ -1,0 +1,64 @@
+@import "common/base";
+
+$left_shift: 1rem;
+$base_fs: 16px;
+
+html{
+    font-size: 16px;
+}
+
+header{
+    margin-left: $left_shift;
+    text-align: center;
+    a{
+        color: $co_gray;
+        font-size: .8em;
+        text-transform: uppercase;
+        font-weight: bold;
+        text-decoration: none;
+        &:hover{
+            color: $co_strong;
+        }
+    }
+}
+
+h1{
+    padding: 0;
+    margin-left: $left_shift;
+}
+
+ul{
+    margin-left: $left_shift;
+    margin-bottom: $left_shift;
+    list-style: none;
+    padding: 0;
+    font-size: 1.2em;
+    li{
+        margin: .5em 0;
+        padding: 0;
+    }
+}
+
+@function rem($px_val){
+    @return ($px_val / $base_fs) * 1rem;
+}
+
+$btn_size: 22px;
+$btn_border: 1px;
+button.ico_action{
+    border: none;
+    box-sizing: content-box;
+    background-color: $co_gray;
+    color: $co_body_bg;
+    font-weight: bold;
+    font-size: rem($btn_size * 25px/31px);
+    padding: 0;
+    height: rem($btn_size);
+    line-height: rem($btn_size);
+    width: rem($btn_size);
+    outline: none;
+    cursor: pointer;
+    &:hover{
+        background-color: $co_strong;
+    }
+}

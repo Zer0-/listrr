@@ -1,4 +1,4 @@
-@import "common/var";
+@import "common/base";
 
 $largish_font: 1.2em;
 
@@ -10,11 +10,8 @@ html{
 }
 
 body{
-    background-color: $co_body_bg;
-    text-align: center;
     padding-top: 4em;
-    color: $co_darkest;
-    font-family: sans-serif;
+    text-align: center;
 }
 
 h1{

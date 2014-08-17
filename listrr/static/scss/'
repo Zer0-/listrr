@@ -1,0 +1,7 @@
+@import "common/base";
+
+$left_padding: 1rem;
+
+html{
+    font-size: 16px;
+}
