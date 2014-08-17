@@ -35,6 +35,10 @@ class ListApi:
     def __init__(self, db, settings):
         self.db = db
         self.uuid_size = settings['list_uuid_size']
+        rootnode = self.get_root_node()
+        if rootnode is None:
+            logging.info("Creating root list node www")
+            self.create_root_node()
 
     def create_root_node(self):
         return self.add_list_item(None, 'www')

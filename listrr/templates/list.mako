@@ -5,6 +5,11 @@
     <title></title>
 </head>
 <body>
-    <h1>Hello List</h1>
+    <h1>${head.title}</h1>
+    <ul>
+        %for li in tree:
+            <li>${li.title}</li>
+        %endfor
+    </ul>
 </body>
 </html>

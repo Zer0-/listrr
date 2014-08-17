@@ -36,24 +36,21 @@ class ListView:
         list = self.listapi.get_list_tree(list_id)
         if list is None:
             raise HTTPNotFound()
-        return {}
+        head = list[0]
+        tree = head.replies
+        return {
+            'head': head,
+            'tree': tree
+        }
 
 class ApiNewItem:
     depends_on = [ListApi]
 
     def __init__(self, listapi):
         self.listapi = listapi
-        rootnode = listapi.get_root_node()
-        if rootnode is None:
-            logging.info("Creating root list node www")
-            self.root_id = listapi.create_root_node()
-        else:
-            self.root_id = rootnode[0]
+        self.root_id = listapi.get_root_node()[0]
 
     def POST(self, request, response):
-        url = '/' + '/'.join(request.route.find('list', (self.root_id,)))
-        response.text = url
-        return
         title = request.POST.get('title')
         if not title:
             raise HTTPBadRequest('No title data!')
@@ -63,4 +60,4 @@ class ApiNewItem:
         else:
             parent_id = vars[0]
         new_id = self.listapi.add_list_item(parent_id, title)
-        response.text = new_id
+        response.text = request.route.find('list', (new_id,))
