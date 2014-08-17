@@ -1,5 +1,14 @@
 @import "common/var";
 
+$largish_font: 1.2em;
+
+html{
+    font-size: 12px;
+    @media all and (min-width: 1200px) {
+        font-size: 16px;
+    }
+}
+
 body{
     background-color: $co_body_bg;
     text-align: center;
@@ -10,14 +19,100 @@ body{
 
 h1{
     font-size: 5.5em;
-    margin-bottom: .3em;
+    margin-bottom: .1em;
 }
 
 span.tagline{
     color: $co_gray;
-    font-size: 1.2em;
+    font-size: $largish_font;
 }
 
 span.strong{
     color: $co_strong;
+}
+
+section#action{
+    margin-top: 8em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@mixin keyframes($name){
+    @-webkit-keyframes $name {
+        @content;
+    }
+    @keyframes $name {
+        @content;
+    }
+}
+
+@include keyframes(slidein){
+    from{
+        width: 0;
+        padding: 1em 0;
+    }
+    to{
+        width: 15em;
+        padding: 1em;
+    }
+}
+
+@mixin animation($duration, $animation, $timing: linear, $delay: 0) {
+     /* forwards prevents the animation from restarting */
+
+    -webkit-animation-delay: $delay;
+    -webkit-animation-duration: $duration;
+    -webkit-animation-name: $animation;
+    -webkit-animation-timing-function: $timing;
+    -webkit-animation-fill-mode: forwards;
+ 
+    animation-delay: $delay;
+    animation-duration: $duration;
+    animation-name: $animation;
+    animation-timing-function: $timing;
+    animation-fill-mode: forwards;
+}
+
+form input[name=title]{
+    vertical-align: top;
+    box-sizing: content-box;
+    display: inline-block;
+    border: none;
+    background-color: $co_darkest;
+    padding: 1em;
+    font-size: $largish_font;
+    height: $largish_font;
+    color: $co_body_bg;
+    font-weight: bold;
+    outline: none;
+    &:focus{
+        background-color: $co_gray;
+    }
+    @include animation(300ms, slidein, ease-in-out);
+}
+
+#main_button{
+    vertical-align: top;
+    display: inline-block;
+    box-sizing: content-box;
+    background-color: $co_darkest;
+    font-weight: bold;
+    font-size: $largish_font;
+    height: $largish_font;
+    color: $co_body_bg;
+    padding: 1em 2em;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    &:hover{
+        background-color: $co_strong;
+    }
+}
+
+#main_button[disabled]{
+    background-color: $co_gray;
+    &:hover{
+        background-color: $co_gray;
+        cursor: default;
+    }
 }

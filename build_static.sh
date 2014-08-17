@@ -14,7 +14,7 @@ OUT=$(read_setting served_static_dir)
 
 mkdir $OUT
 mkdir $OUT/scss
-rm -rfv ./.sass-cache
+rm -rf ./.sass-cache
 rm -rv $OUT/scss/*
 
 collect(){
