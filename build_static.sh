@@ -13,6 +13,7 @@ IN=$(read_setting static_buildout_dir)
 OUT=$(read_setting served_static_dir)
 
 mkdir $OUT
+mkdir $OUT/scss
 rm -rfv ./.sass-cache
 rm -rv $OUT/scss/*
 
@@ -23,8 +24,8 @@ collect(){
 }
 
 build(){
-    #coffee --compile --output $OUT/coffee $IN/coffee &
-    sass --update $IN/scss:$OUT/scss
+    coffee --compile --output $OUT/coffee $IN/coffee &
+    sass --style expanded --update $IN/scss:$OUT/scss
 }
 
 collect
