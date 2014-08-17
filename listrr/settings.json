@@ -6,7 +6,7 @@
         "host": "127.0.0.1",
         "conn_pool_size": 1
     },
-    "list_uuid_size": 10,
+    "list_uuid_size": 5,
     "logfile_path": "/tmp",
     "debug": true,
     "port": 8000,
