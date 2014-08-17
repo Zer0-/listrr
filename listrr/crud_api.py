@@ -9,24 +9,6 @@ from listrr.listid import gen_list_uuid
 
 ListItem = namedtuple('ListItem', 'id, title, time_created, replies')
 
-def create_root_node(db, uuid_size):
-    return add_list_item(db, uuid_size, None, 'www')
-
-def get_root_node(db):
-    with db.cursor as cursor:
-        cursor.execute(GET_ROOT_NODE)
-        return cursor.fetchone()
-
-def add_list_item(db, uuid_size, parent_id, title):
-    #WARNING: there is a nonzero chance a non-unique uuid will be generated
-    #However the database will not allow us to insert in this case.
-    #The chances are so low that this happening means it's very likely that
-    #either uuid_size is way too small or the RNG is not working properly
-    uuid = gen_list_uuid(uuid_size)
-    with db.cursor as cursor:
-        cursor.execute(ADD_LIST_ITEM, (uuid, parent_id, title))
-    return uuid
-
 def _build_list_tree(db_results):
     depth = db_results[0][3]
     root = []
@@ -47,12 +29,37 @@ def _build_list_tree(db_results):
         last_elem = post.replies
     return root
 
-def get_list_tree(db, parent_id):
-    with db.cursor as cursor:
-        cursor.execute(GET_LIST_TREE, (parent_id,))
-        query_result = cursor.fetchall()
-    return _build_list_tree(query_result)
+class ListApi:
+    requires_configured = ['sql_database', 'json_settings']
 
-def update_list_item_title(db, list_id, newtitle):
-    with db.cursor as cursor:
-        cursor.execute(UPDATE_ITEM_TITLE, (newtitle, list_id))
+    def __init__(self, db, settings):
+        self.db = db
+        self.uuid_size = settings['list_uuid_size']
+
+    def create_root_node(self):
+        return self.add_list_item(None, 'www')
+
+    def get_root_node(self):
+        with self.db.cursor as cursor:
+            cursor.execute(GET_ROOT_NODE)
+            return cursor.fetchone()
+
+    def add_list_item(self, parent_id, title):
+        #WARNING: there is a nonzero chance a non-unique uuid will be generated
+        #However the database will not allow us to insert in this case.
+        #The chances are so low that this happening means it's very likely that
+        #either uuid_size is way too small or the RNG is not working properly
+        uuid = gen_list_uuid(self.uuid_size)
+        with self.db.cursor as cursor:
+            cursor.execute(ADD_LIST_ITEM, (uuid, parent_id, title))
+        return uuid
+
+    def get_list_tree(self, parent_id):
+        with self.db.cursor as cursor:
+            cursor.execute(GET_LIST_TREE, (parent_id,))
+            query_result = cursor.fetchall()
+        return _build_list_tree(query_result)
+
+    def update_list_item_title(self, list_id, newtitle):
+        with self.db.cursor as cursor:
+            cursor.execute(UPDATE_ITEM_TITLE, (newtitle, list_id))

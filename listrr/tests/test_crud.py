@@ -2,13 +2,7 @@ import unittest
 from bricks import Settings
 from common_components.db import PostgresThreadPool, DatabaseComponent
 
-from listrr.crud_api import (
-    get_root_node,
-    create_root_node,
-    add_list_item,
-    get_list_tree,
-    update_list_item_title,
-)
+from listrr.crud_api import ListApi
 
 def clear_list_table(db):
     with db.cursor as cursor:
@@ -22,26 +16,26 @@ class TestCrud(unittest.TestCase):
         self.db = DatabaseComponent(PostgresThreadPool(settings))
         create_table(self.db, settings)
         self.settings = settings
-        self.uuid_size = settings['list_uuid_size']
+
+    def setUp(self):
+        self.listapi = ListApi(self.db, self.settings)
 
     def tearDown(self):
         clear_list_table(self.db)
 
     def testRootNodeNonexist(self):
-        self.assertEqual(get_root_node(self.db), None)
+        self.assertEqual(self.listapi.get_root_node(), None)
 
     def testRootNodeCreation(self):
-        node_id = create_root_node(self.db, self.uuid_size)
-        fetched_node_id = get_root_node(self.db)[0]
+        node_id = self.listapi.create_root_node()
+        fetched_node_id = self.listapi.get_root_node()[0]
         self.assertEqual(node_id, fetched_node_id)
 
     def testAddToplevelList(self):
-        rootnode = create_root_node(self.db, self.uuid_size)
+        rootnode = self.listapi.create_root_node()
         uuids = set()
         for i in range(4):
-            uuids.add(add_list_item(
-                self.db,
-                self.uuid_size,
+            uuids.add(self.listapi.add_list_item(
                 rootnode,
                 str(i) * 10
             ))
@@ -57,10 +51,8 @@ class TestCrud(unittest.TestCase):
             self.assertTrue(uuid in uuids)
 
     def testAddNestedList(self):
-        rootnode = create_root_node(self.db, self.uuid_size)
-        list_id = add_list_item(
-            self.db,
-            self.uuid_size,
+        rootnode = self.listapi.create_root_node()
+        list_id = self.listapi.add_list_item(
             rootnode,
             'root'
         )
@@ -71,16 +63,14 @@ class TestCrud(unittest.TestCase):
             if n < 1:
                 return
             for i in range(3):
-                list_item_id = add_list_item(
-                    self.db,
-                    self.uuid_size,
+                list_item_id = self.listapi.add_list_item(
                     parent_id,
                     str(n)*4 + str(i)
                 )
                 add_count += 1
                 deep_add(list_item_id, n-1)
         deep_add(list_id, maxdepth)
-        tree = get_list_tree(self.db, list_id)[0]
+        tree = self.listapi.get_list_tree(list_id)[0]
         self.assertEqual(tree.title, "root")
         self.assertEqual(tree.id, list_id)
         get_count = 0
@@ -93,15 +83,13 @@ class TestCrud(unittest.TestCase):
         chk_tree(tree.replies, 0)
 
     def testUpdateTitle(self):
-        rootnode = create_root_node(self.db, self.uuid_size)
-        list_id = add_list_item(
-            self.db,
-            self.uuid_size,
+        rootnode = self.listapi.create_root_node()
+        list_id = self.listapi.add_list_item(
             rootnode,
             'root'
         )
-        update_list_item_title(self.db, list_id, "testupdate")
-        list_item = get_list_tree(self.db, list_id)[0]
+        self.listapi.update_list_item_title(list_id, "testupdate")
+        list_item = self.listapi.get_list_tree(list_id)[0]
         self.assertEqual(list_item.title, "testupdate")
 
     @classmethod
