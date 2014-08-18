@@ -5,15 +5,22 @@ from bricks.httpexceptions import HTTPBadRequest, HTTPNotFound
 from common_components.static_renderers import Sass, SassLib, Coffee
 from listrr.crud_api import ListApi
 
+class FormBtn:
+    depends_on = [
+        StaticJs('jquery',     asset='listrr:static/js/jquery.js'),
+        Coffee('form_watcher', asset='listrr:static/coffee/form_watcher.coffee'),
+        Coffee('ajax_forms',   asset='listrr:static/coffee/ajax_forms.coffee'),
+        Coffee('form_btn',  asset='listrr:static/coffee/form_btn.coffee'),
+    ]
+    def __init__(self, *args):
+        pass
+
 class Homepage:
     requires_configured = ['static_manager']
     depends_on = [
         SassLib('common_scss', asset='listrr:static/scss/common'),
         Sass('homepage_style', asset='listrr:static/scss/home.scss'),
-        StaticJs('jquery',     asset='listrr:static/js/jquery.js'),
-        Coffee('form_watcher', asset='listrr:static/coffee/form_watcher.coffee'),
-        Coffee('ajax_forms',   asset='listrr:static/coffee/ajax_forms.coffee'),
-        Coffee('home_coffee',  asset='listrr:static/coffee/home.coffee'),
+        FormBtn,
     ]
 
     def __init__(self, static_manager, *static):
@@ -29,6 +36,8 @@ class ListView:
         ListApi,
         SassLib('common_scss', asset='listrr:static/scss/common'),
         Sass('list_style', asset='listrr:static/scss/list.scss'),
+        FormBtn,
+        Coffee('list_coffee',  asset='listrr:static/coffee/list.coffee'),
     ]
 
     def __init__(self, static_manager, listapi, *static):

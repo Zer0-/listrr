@@ -3,14 +3,14 @@ create_validator = (title_input) ->
         title = title_input.val()
         return title.length
 
-bind_form_submit = (form, disable) ->
+bind_form_submit = (form, disable, success_callback) ->
     response_handlers =
         load: (evt) ->
             xhr = @
             status = xhr.status
             response = xhr.response
             if status == 200
-                window.location = response
+                success_callback xhr.response
             else
                 console.log "Server Replied with an error (#{status}):"
                 console.log response
@@ -22,29 +22,28 @@ bind_form_submit = (form, disable) ->
         send_form form, response_handlers
         disable()
 
-disable_watcher = (form) ->
-    $("input", form).unbind()
-
-rebind_button = (btn, title_input) ->
+rebind_button = (btn, title_input, success_callback) ->
     disable = ->
         btn.attr 'disabled', 'disabled'
         btn.unbind()
     disable()
     form = $ 'form'
     disable_all = ->
-        disable_watcher form
+        title_input.unbind()
         disable()
-    bind_form_submit form, disable_all
+    bind_form_submit form, disable_all, success_callback
     enable = ->
         btn.removeAttr 'disabled'
     title_input.show()
     validator = create_validator title_input
     watch_changes form, validator, enable, disable
 
-$ ->
-    main_button = $ '#main_button'
+bind_form_btn = (formelem, success_callback) ->
+    main_button = $ 'button[type=submit]', formelem
     main_button.removeAttr 'disabled'
-    title_input = $ 'form input[name=title]'
+    title_input = $ 'input[name=title]', formelem
     main_button.click ->
-        rebind_button main_button, title_input
+        rebind_button main_button, title_input, success_callback
         return false
+
+window.bind_form_btn = bind_form_btn

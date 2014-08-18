@@ -1,0 +1,29 @@
+@mixin animation($duration, $animation, $timing: linear, $delay: 0) {
+     /* forwards prevents the animation from restarting */
+
+    -webkit-animation-delay: $delay;
+    -webkit-animation-duration: $duration;
+    -webkit-animation-name: $animation;
+    -webkit-animation-timing-function: $timing;
+    -webkit-animation-fill-mode: forwards;
+ 
+    animation-delay: $delay;
+    animation-duration: $duration;
+    animation-name: $animation;
+    animation-timing-function: $timing;
+    animation-fill-mode: forwards;
+}
+
+@mixin keyframes($name){
+    @-webkit-keyframes $name {
+        @content;
+    }
+    @keyframes $name {
+        @content;
+    }
+}
+
+@function rem($px_val){
+    @return ($px_val / $base_fs) * 1rem;
+}
+
