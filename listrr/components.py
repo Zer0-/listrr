@@ -37,6 +37,7 @@ class ListView:
         SassLib('common_scss', asset='listrr:static/scss/common'),
         Sass('list_style', asset='listrr:static/scss/list.scss'),
         FormBtn,
+        Coffee('skelly_js', asset='listrr:static/skelly.js/src/templates.coffee'),
         Coffee('list_coffee',  asset='listrr:static/coffee/list.coffee'),
     ]
 

@@ -22,28 +22,35 @@ bind_form_submit = (form, disable, success_callback) ->
         send_form form, response_handlers
         disable()
 
-rebind_button = (btn, title_input, success_callback) ->
-    disable = ->
-        btn.attr 'disabled', 'disabled'
-        btn.unbind()
+rebind_button = (disable, enable, disable_all, form_elem, title_input, success_callback) ->
     disable()
-    form = $ 'form'
+    bind_form_submit form_elem, disable_all, success_callback
+    validator = create_validator title_input
+    watch_changes form_elem, validator, enable, disable
+
+bind_form_btn = (form_elem, success_callback) ->
+    main_button = $ 'button[type=submit]', form_elem
+    main_button.removeAttr 'disabled'
+    title_input = $ 'input[name=title]', form_elem
+    reset_button = $ 'button[type=reset]', form_elem
+    disable = ->
+        main_button.attr 'disabled', 'disabled'
     disable_all = ->
         title_input.unbind()
         disable()
-    bind_form_submit form, disable_all, success_callback
     enable = ->
-        btn.removeAttr 'disabled'
-    title_input.show()
-    validator = create_validator title_input
-    watch_changes form, validator, enable, disable
-
-bind_form_btn = (formelem, success_callback) ->
-    main_button = $ 'button[type=submit]', formelem
-    main_button.removeAttr 'disabled'
-    title_input = $ 'input[name=title]', formelem
+        main_button.removeAttr 'disabled'
     main_button.click ->
-        rebind_button main_button, title_input, success_callback
+        main_button.unbind()
+        rebind_button disable, enable, disable_all, form_elem, title_input, success_callback
+        title_input.show()
+        reset_button.show()
         return false
+    reset_button.click ->
+        title_input.unbind()
+        title_input.hide()
+        enable()
+        reset_button.hide()
+        bind_form_btn form_elem, success_callback
 
 window.bind_form_btn = bind_form_btn

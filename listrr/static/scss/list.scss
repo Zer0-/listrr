@@ -1,7 +1,7 @@
 @import "common/base";
 @import "common/mixins";
 
-$left_shift: 1rem;
+$left_shift: 2rem;
 $base_fs: 16px;
 
 html{
@@ -33,7 +33,7 @@ ul{
     margin-bottom: $left_shift;
     list-style: none;
     padding: 0;
-    font-size: 1.2em;
+    font-size: 1.2rem;
     li{
         margin: .5em 0;
         padding: 0;
@@ -45,7 +45,16 @@ ul{
         width: 0;
     }
     to{
-        width: 10em;
+        width: 15em;
+    }
+}
+
+@include keyframes(fadein){
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
     }
 }
 
@@ -105,5 +114,8 @@ form.new_item_form{
         &:focus{
             background-color: $co_darkest;
         }
+    }
+    button.ico_action[type=reset]{
+        @include animation(1000ms, fadein, linear);
     }
 }

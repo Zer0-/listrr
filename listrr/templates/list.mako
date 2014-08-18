@@ -1,3 +1,22 @@
+<%def name="rlist(tree, parent)">
+    <ul>
+        %for li in tree:
+            <li>
+                <div>${li.title}</div>
+                %if li.replies:
+                    ${rlist(li.replies, li)}
+                %endif
+            </li>
+        %endfor
+        <li>
+            <form action="${request.route.find('new_list_item', (parent.id,))}" method="POST" class="new_item_form">
+                <input style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
+                <button title="Add a list item" class="ico_action" type="submit" disabled>+</button>
+                <button title="Cancel" class="ico_action" type="reset" style="display: none">&times;</button>
+            </form>
+        </li>
+    </ul>
+</%def>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,16 +28,11 @@
 <body>
     <header><a href="/">Home</a></header>
     <h1>${head.title}</h1>
-    <ul>
-        %for li in tree:
-            <li>${li.title}</li>
-        %endfor
-        <li>
-            <form action="${request.route.find('new_list_item', (head.id,))}" method="POST" class="new_item_form">
-                <input style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
-                <button class="ico_action" type="submit" disabled>+</button>
-            </form>
+    ${rlist(tree, head)}
+    <div class="js-templates" style="display: none">
+        <li data-js_template_name="li">
+            <div js-template_fieldname="content" js-template_fieldtype="append"></div>
         </li>
-    </ul>
+    </div>
 </body>
 </html>
