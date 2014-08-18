@@ -48,7 +48,7 @@ WITH RECURSIVE t(
         id,
         title,
         time_created,
-        array[-extract(epoch from last_modified)] AS path,
+        array[extract(epoch from last_modified)] AS path,
         0 AS depth
     FROM list_item
     WHERE id=%s
@@ -59,7 +59,7 @@ WITH RECURSIVE t(
         list_item.id,
         list_item.title,
         list_item.time_created,
-        t.path || -extract(epoch from list_item.last_modified),
+        t.path || extract(epoch from list_item.last_modified),
         t.depth + 1
     FROM list_item, t
     WHERE list_item.parent_id=t.id
@@ -69,5 +69,5 @@ SELECT
     title,
     time_created,
     depth
-FROM t ORDER BY path ASC;
+FROM t ORDER BY path;
 """

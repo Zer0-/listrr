@@ -1,0 +1,3 @@
+[submodule "listrr/static/skelly.js"]
+	path = listrr/static/skelly.js
+	url = https://github.com/Zer0-/skelly.js.git
