@@ -3,6 +3,7 @@ bind_initial_btn_submit = (elems, jx_ok_callback, submit_callback) ->
     elems.btn_submit.click ->
         form_setup elems, jx_ok_callback, submit_callback
         elems.btn_submit.unbind()
+        elems.btn_submit.attr 'type', 'submit'
 
 bind_btn_reset = (elems, jx_ok_callback, submit_callback) ->
     elems.btn_reset.click ->
@@ -28,6 +29,7 @@ form_teardown = (elems) ->
     elems.txt_input.unbind()
     elems.btn_reset.unbind()
     elems.btn_submit.removeAttr 'disabled'
+    elems.btn_submit.removeAttr 'type'
     elems.form.unbind()
     elems.txt_input.hide()
     elems.btn_reset.hide()
@@ -58,7 +60,7 @@ bind_form_submit = (elems, jx_ok_callback, submit_callback) ->
 init_miniform = (form, jx_ok_callback, submit_callback) ->
     elems =
         form: form
-        btn_submit: $ 'button[type=submit]', form
+        btn_submit: $ 'button[disabled]', form
         txt_input: $ 'input[type=text]', form
         btn_reset: $ 'button[type=reset]', form
 

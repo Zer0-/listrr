@@ -3,6 +3,8 @@
 
 $left_shift: 2rem;
 $base_fs: 16px;
+$btn_size: 22px;
+$btn_border: 1px;
 
 html{
     font-size: 16px;
@@ -58,8 +60,6 @@ ul{
     }
 }
 
-$btn_size: 22px;
-$btn_border: 1px;
 button.ico_action{
     border: none;
     box-sizing: content-box;
@@ -81,10 +81,6 @@ button.ico_action{
         background-color: $co_strong;
         color: $co_body_bg;
     }
-}
-
-.del_item_form{
-    display: inline-block;
 }
 
 form.new_item_form{
@@ -122,5 +118,57 @@ form.new_item_form{
     }
     button.ico_action[type=reset]{
         @include animation(1000ms, fadein, linear);
+    }
+}
+
+ul li{
+    .rowitem{
+        display: block;
+        float: left;
+        padding: 0;
+        margin: 0;
+    }
+    &> div{
+        @include clearfix;
+    }
+}
+
+ul li .menu{
+    margin-left: .3em;
+    width: 3 * $btn_size;
+    height: $btn_size;
+    .menu_hint{
+        $thickness: 1px;
+        width: 100%;
+        height: rem($btn_size - $thickness);
+        border-bottom: rem($thickness) solid $co_gray;
+    }
+    .menu_item{
+        display: none;
+        position: relative;
+        background-color: $co_gray;
+        height: 1.5 * $btn_size;
+    }
+    &:hover{
+        .menu_item{
+            display: block;
+        }
+        .menu_hint{
+            $thickness: 0.5 * $btn_size;
+            height: rem($btn_size - $thickness);
+            border-bottom: rem($thickness) solid $co_darkest;
+        }
+    }
+    form{
+        height: 100%;
+    }
+    .ico_action{
+        width: 100%;
+        display: block;
+        height: 100%;
+        color: $co_body_bg;
+        &:hover{
+            background-color: $co_strong;
+        }
     }
 }
