@@ -2,14 +2,19 @@
     <ul>
         %for li in tree:
             <li>
-                <div>${li.title}</div>
+                <div>
+                    ${li.title}
+                    <form class="del_item_form" action="${request.route.find('api', (li.id,))}" method="DELETE">
+                        <button type="submit" class="ico_action">&times</button>
+                    </form>
+                </div>
                 %if li.replies:
                     ${rlist(li.replies, li)}
                 %endif
             </li>
         %endfor
         <li>
-            <form action="${request.route.find('new_list_item', (parent.id,))}" method="POST" class="new_item_form">
+            <form action="${request.route.find('api', (parent.id,))}" method="POST" class="new_item_form">
                 <input style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
                 <button title="Add a list item" class="ico_action" type="submit" disabled>+</button>
                 <button title="Cancel" class="ico_action" type="reset" style="display: none">&times;</button>

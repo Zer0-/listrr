@@ -94,8 +94,14 @@ class TestCrud(unittest.TestCase):
             rootnode,
             'A test item is a test item'
         )
-        self.listapi.remove_list_item(list_id)
+        result = self.listapi.remove_list_item(list_id)
+        self.assertTrue(result)
         self.assertFalse(self.listapi.get_list_tree(rootnode)[0].replies)
+
+    def testNoDel(self):
+        rootnode = self.listapi.get_root_node()
+        result = self.listapi.remove_list_item("a" * len(rootnode))
+        self.assertFalse(result)
 
     @classmethod
     def tearDownClass(self):

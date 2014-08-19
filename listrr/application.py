@@ -21,13 +21,15 @@ def make_length_verifier():
         return len(s) == correct_length
     return lenverify
 
-from listrr.components import Homepage, ListView, ApiNewItem
-new_list_item_route = Route('new_list_item', handler=ApiNewItem)
+uuid_length = make_length_verifier()
+
+from listrr.components import Homepage, ListView, Api
+api_route = Route('api', handler=Api)
 routemap = Route('home', handler=Homepage) + {
-    make_length_verifier(): Route('list', handler=ListView) + {
-        'new': new_list_item_route
-    },
-    'new': new_list_item_route
+    uuid_length: Route('list', handler=ListView),
+    'api': api_route + {
+        uuid_length: api_route
+    }
 }
 
 application = app_from_routemap(routemap, components=components)

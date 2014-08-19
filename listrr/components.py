@@ -1,5 +1,5 @@
 import logging
-from bricks.render import mako_response
+from bricks.render import mako_response, json_response
 from bricks.staticfiles import StaticJs
 from bricks.httpexceptions import HTTPBadRequest, HTTPNotFound
 from common_components.static_renderers import Sass, SassLib, Coffee
@@ -47,19 +47,18 @@ class ListView:
 
     @mako_response('listrr:templates/list.mako')
     def GET(self, request, response):
-        #WARNING TODO: make sure list_id is not root_id!
         list_id = request.route.vars[0]
-        list = self.listapi.get_list_tree(list_id)
-        if list is None:
+        list_items = self.listapi.get_list_tree(list_id)
+        if list_items is None:
             raise HTTPNotFound()
-        head = list[0]
+        head = list_items[0]
         tree = head.replies
         return {
             'head': head,
             'tree': tree
         }
 
-class ApiNewItem:
+class Api:
     depends_on = [ListApi]
 
     def __init__(self, listapi):
@@ -77,3 +76,9 @@ class ApiNewItem:
             parent_id = vars[0]
         new_id = self.listapi.add_list_item(parent_id, title)
         response.text = request.route.find('list', (new_id,))
+
+    def DELETE(self, request, response):
+        list_id = request.route.vars[0]
+        del_result = self.listapi.remove_list_item(list_id)
+        if not del_result:
+            return HTTPNotFound()

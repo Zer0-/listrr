@@ -83,25 +83,30 @@ button.ico_action{
     }
 }
 
-button.ico_action[type=submit]{
-    background-color: $co_darkest;
-    color: $co_body_bg;
-    &:hover{
-        background-color: $co_strong;
-    }
-}
-
-button.ico_action[disabled]{
-    background-color: $co_gray;
-    &:hover{
-        background-color: $co_gray;
-    }
+.del_item_form{
+    display: inline-block;
 }
 
 form.new_item_form{
     input, button{
         vertical-align: top;
     }
+
+    button.ico_action[type=submit]{
+        background-color: $co_darkest;
+        color: $co_body_bg;
+        &:hover{
+            background-color: $co_strong;
+        }
+    }
+
+    button.ico_action[disabled]{
+        background-color: $co_gray;
+        &:hover{
+            background-color: $co_gray;
+        }
+    }
+
     input[name=title]{
         vertical-align: top;
         @include animation(300ms, slidein, ease-in-out);

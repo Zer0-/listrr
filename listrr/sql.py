@@ -23,7 +23,7 @@ INSERT INTO list_item (
 """
 
 DELETE_LIST_ITEM = """
-DELETE FROM list_item WHERE id=%s
+DELETE FROM list_item WHERE id=%s RETURNING id
 """
 
 UPDATE_LIST_TIMESTAMPS = """

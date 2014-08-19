@@ -73,6 +73,8 @@ class ListApi:
     def remove_list_item(self, item_id):
         with self.db.cursor as cursor:
             cursor.execute(DELETE_LIST_ITEM, (item_id,))
+            result = cursor.fetchone()
+        return result is not None
 
     def update_list_item_title(self, list_id, newtitle):
         with self.db.cursor as cursor:
