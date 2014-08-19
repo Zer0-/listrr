@@ -22,6 +22,10 @@ INSERT INTO list_item (
 ) VALUES (%s, %s, %s)
 """
 
+DELETE_LIST_ITEM = """
+DELETE FROM list_item WHERE id=%s
+"""
+
 UPDATE_LIST_TIMESTAMPS = """
 WITH RECURSIVE t(id) AS (                                                          
     SELECT %s

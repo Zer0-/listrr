@@ -64,7 +64,7 @@ class ApiNewItem:
 
     def __init__(self, listapi):
         self.listapi = listapi
-        self.root_id = listapi.get_root_node()[0]
+        self.root_id = listapi.get_root_node()
 
     def POST(self, request, response):
         title = request.POST.get('title')

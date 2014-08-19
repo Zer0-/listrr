@@ -4,8 +4,10 @@ from listrr.sql import (
     ADD_LIST_ITEM,
     GET_LIST_TREE,
     UPDATE_ITEM_TITLE,
+    DELETE_LIST_ITEM,
 )
 from listrr.listid import gen_list_uuid
+import logging
 
 ListItem = namedtuple('ListItem', 'id, title, time_created, replies')
 
@@ -35,18 +37,21 @@ class ListApi:
     def __init__(self, db, settings):
         self.db = db
         self.uuid_size = settings['list_uuid_size']
-        rootnode = self.get_root_node()
+        rootnode = self._get_raw_root_node()
         if rootnode is None:
             logging.info("Creating root list node www")
-            self.create_root_node()
+            rootnode = self.create_root_node()
 
     def create_root_node(self):
         return self.add_list_item(None, 'www')
 
-    def get_root_node(self):
+    def _get_raw_root_node(self):
         with self.db.cursor as cursor:
             cursor.execute(GET_ROOT_NODE)
             return cursor.fetchone()
+
+    def get_root_node(self):
+        return self._get_raw_root_node()[0]
 
     def add_list_item(self, parent_id, title):
         #WARNING: there is a nonzero chance a non-unique uuid will be generated
@@ -64,6 +69,10 @@ class ListApi:
             query_result = cursor.fetchall()
         if query_result:
             return _build_list_tree(query_result)
+
+    def remove_list_item(self, item_id):
+        with self.db.cursor as cursor:
+            cursor.execute(DELETE_LIST_ITEM, (item_id,))
 
     def update_list_item_title(self, list_id, newtitle):
         with self.db.cursor as cursor:

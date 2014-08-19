@@ -24,15 +24,11 @@ class TestCrud(unittest.TestCase):
         clear_list_table(self.db)
 
     def testRootNodeNonexist(self):
-        self.assertEqual(self.listapi.get_root_node(), None)
-
-    def testRootNodeCreation(self):
-        node_id = self.listapi.create_root_node()
-        fetched_node_id = self.listapi.get_root_node()[0]
-        self.assertEqual(node_id, fetched_node_id)
+        root_node = self.listapi.get_root_node()
+        self.assertTrue(root_node)
 
     def testAddToplevelList(self):
-        rootnode = self.listapi.create_root_node()
+        rootnode = self.listapi.get_root_node()
         uuids = set()
         for i in range(4):
             uuids.add(self.listapi.add_list_item(
@@ -51,7 +47,7 @@ class TestCrud(unittest.TestCase):
             self.assertTrue(uuid in uuids)
 
     def testAddNestedList(self):
-        rootnode = self.listapi.create_root_node()
+        rootnode = self.listapi.get_root_node()
         list_id = self.listapi.add_list_item(
             rootnode,
             'root'
@@ -83,7 +79,7 @@ class TestCrud(unittest.TestCase):
         chk_tree(tree.replies, 0)
 
     def testUpdateTitle(self):
-        rootnode = self.listapi.create_root_node()
+        rootnode = self.listapi.get_root_node()
         list_id = self.listapi.add_list_item(
             rootnode,
             'root'
@@ -91,6 +87,15 @@ class TestCrud(unittest.TestCase):
         self.listapi.update_list_item_title(list_id, "testupdate")
         list_item = self.listapi.get_list_tree(list_id)[0]
         self.assertEqual(list_item.title, "testupdate")
+
+    def testDel(self):
+        rootnode = self.listapi.get_root_node()
+        list_id = self.listapi.add_list_item(
+            rootnode,
+            'A test item is a test item'
+        )
+        self.listapi.remove_list_item(list_id)
+        self.assertFalse(self.listapi.get_list_tree(rootnode)[0].replies)
 
     @classmethod
     def tearDownClass(self):
