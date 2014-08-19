@@ -30,8 +30,13 @@
     <h1>${head.title}</h1>
     ${rlist(tree, head)}
     <div class="js-templates" style="display: none">
-        <li data-js_template_name="li">
-            <div js-template_fieldname="content" js-template_fieldtype="append"></div>
+        <div data-js_template_name="list_item" data-js_template_fieldname="content" data-js_template_fieldtype="append"></div>
+        <li data-js_template_name="li_form">
+            <form data-js_template_fieldname="action" data-js_template_fieldtype="setattr" method="POST" class="new_item_form">
+                <input style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
+                <button title="Add a list item" class="ico_action" type="submit" disabled>+</button>
+                <button title="Cancel" class="ico_action" type="reset" style="display: none">&times;</button>
+            </form>
         </li>
     </div>
 </body>

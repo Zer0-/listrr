@@ -51,8 +51,9 @@ bind_form_submit = (elems, jx_ok_callback, submit_callback) ->
         e.preventDefault()
         send_form form, response_handlers
         if submit_callback?
-            submit_callback()
+            submit_callback elems.txt_input.val()
         form_teardown elems
+        elems.btn_submit.attr 'disabled', 'disabled'
 
 init_miniform = (form, jx_ok_callback, submit_callback) ->
     elems =
