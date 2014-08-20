@@ -39,21 +39,38 @@ initialize_li_form = (form) ->
         new_li_title = title
     init_miniform form, ajax_callback, submit_callback
 
+hit_detection = (x, y, tx, ty, width, height) ->
+    if tx <= x <= (tx + width)
+        if ty <= y <= (ty + height)
+            return true
+    return false
+
+many_hit = (elems, e) ->
+    x = e.pageX
+    y = e.pageY
+    for elem in elems
+        elem = $ elem
+        target = elem.offset()
+        if hit_detection x, y, target.left, target.top, elem.width(), elem.height()
+            return true
+    return false
+
 initialize_menu = (menu) ->
     toggle_elems = $ ".menu_item", menu
-    bind_window = ->
-        window_click = ->
-            $(".menu_icon", menu).toggleClass "selected"
-            toggle_elems.stop()
+    btn_menu = $(".menu_icon", menu)
+    window_click = (e) ->
+        if not many_hit toggle_elems, e
             toggle_elems.fadeToggle()
+            btn_menu.toggleClass 'selected'
             $(window).unbind 'click', window_click
-        $(window).click window_click
+            initialize_menu menu
 
-    $(".menu_icon", menu).click (e) ->
+    btn_menu.click (e) ->
+        btn_menu.toggleClass 'selected'
         toggle_elems.fadeToggle()
-        $(@).toggleClass "selected"
+        $(window).click window_click
         e.stopPropagation()
-        bind_window()
+        btn_menu.unbind()
 
 $ ->
     forms = $ "form.new_item_form"
