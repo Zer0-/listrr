@@ -3,28 +3,28 @@
         %for li in tree:
             <li>
                 <div>
-                    <div class="rowitem title">
+                    <div class="rowitem title" title="Click to mark off">
                         ${li.title | h}
                     </div>
-                    <div class="rowitem menu">
+                    <div class="rowitem menu" title="Item menu">
                         <div class="menu_icon"></div>
                         <div class="menu_item dark"></div>
                         <div class="menu_item">
                             <form class="del_item_form" action="${request.route.find('api', (li.id,))}" method="DELETE">
-                                <button type="submit" class="ico_action">&times;</button>
+                                <button type="submit" class="ico_action" title="delete list item">&times;</button>
                             </form>
                         </div>
                         <div class="menu_item">
-                            <a class="ico_action" href="${request.route.find('list', (li.id,))}">&#x2693;</a>
+                            <a class="ico_action" href="${request.route.find('list', (li.id,))}" title="Link to dedicated page">&#x2693;</a>
                         </div>
                         <div class="menu_item">
                             <form class="del_item_form" action="${request.route.find('api')}" method="DELETE">
-                                <button type="submit" class="ico_action">✐</button>
+                                <button type="submit" class="ico_action" title="Edit item text">✐</button>
                             </form>
                         </div>
                         <div class="menu_item">
                             <form class="del_item_form" action="${request.route.find('api')}" method="DELETE">
-                                <button type="submit" class="ico_action">&#x25ef;</button>
+                                <button type="submit" class="ico_action" title="Revert to unmarked state">&#x25ef;</button>
                             </form>
                         </div>
                     </div>

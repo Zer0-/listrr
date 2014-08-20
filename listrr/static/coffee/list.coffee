@@ -58,18 +58,23 @@ many_hit = (elems, e) ->
 initialize_menu = (menu) ->
     toggle_elems = $ ".menu_item", menu
     btn_menu = $(".menu_icon", menu)
+    enable = false
     window_click = (e) ->
+        if not enable
+            enable = true
+            return
         if not many_hit toggle_elems, e
-            toggle_elems.fadeToggle()
+            toggle_elems.stop()
+            toggle_elems.fadeToggle 'fast'
             btn_menu.toggleClass 'selected'
             $(window).unbind 'click', window_click
             initialize_menu menu
 
     btn_menu.click (e) ->
         btn_menu.toggleClass 'selected'
+        toggle_elems.stop()
         toggle_elems.fadeToggle()
         $(window).click window_click
-        e.stopPropagation()
         btn_menu.unbind()
 
 $ ->

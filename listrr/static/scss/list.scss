@@ -48,7 +48,7 @@ ul{
         width: 0;
     }
     to{
-        width: 15em;
+        width: 10em;
     }
 }
 
@@ -119,11 +119,11 @@ form.new_item_form{
         }
         padding: 0 .5em;
         border: none;
-        background-color: $co_gray;
-        color: $co_body_bg;
+        background-color: $co_darkest;
+        color: $co_darkest;
         outline: none;
         &:focus{
-            background-color: $co_darkest;
+            background-color: $co_gray;
         }
     }
 
@@ -191,6 +191,10 @@ ul li .menu{
         z-index: 1;
         background-color: $co_body_bg;
         height: 1.5 * $lbtn_size;
+        box-shadow: 30px 20px 0px rgba(0, 0, 0, .2);
+        &:hover{
+            box-shadow: 30px 20px 0px rgba(130, 0, 0, .2);
+        }
         @include largescreen{
             height: 1.5 * $btn_size;
         }
@@ -199,8 +203,12 @@ ul li .menu{
         }
     }
     .dark{
+        box-shadow: none;
+        &:hover{
+            box-shadow: none;
+        }
         border: none;
-        $size: $btn_size;
+        $size: 0.5 * $btn_size;
         background-color: transparent;
         height: $size;
     }
