@@ -5,7 +5,7 @@ $largish_font: 1.2em;
 
 html{
     font-size: 12px;
-    @media all and (min-width: 1200px) {
+    @include largescreen{
         font-size: 16px;
     }
 }

@@ -4,7 +4,8 @@
 $left_shift: 2rem;
 $base_fs: 16px;
 $btn_size: 22px;
-$btn_border: 1px;
+$lbtn_size: 30px;
+
 
 html{
     font-size: 16px;
@@ -60,17 +61,23 @@ ul{
     }
 }
 
-button.ico_action{
+button.ico_action, a.ico_action{
+    text-align: center;
+    text-decoration: none;
     border: none;
     box-sizing: content-box;
     background-color: transparent;
     color: $co_gray;
     font-weight: bold;
-    font-size: rem($btn_size * 25px/31px);
     padding: 0;
-    height: rem($btn_size);
-    line-height: rem($btn_size);
-    width: rem($btn_size);
+    font-size: rem($lbtn_size * 25px/31px);
+    height: rem($lbtn_size);
+    width: rem($lbtn_size);
+    @include largescreen{
+        font-size: rem($btn_size * 25px/31px);
+        height: rem($btn_size);
+        width: rem($btn_size);
+    }
     outline: none;
     cursor: pointer;
     &:hover{
@@ -106,7 +113,10 @@ form.new_item_form{
     input[name=title]{
         vertical-align: top;
         @include animation(300ms, slidein, ease-in-out);
-        height: rem($btn_size);
+        height: rem($lbtn_size);
+        @include largescreen{
+            height: rem($btn_size);
+        }
         padding: 0 .5em;
         border: none;
         background-color: $co_gray;
@@ -116,12 +126,14 @@ form.new_item_form{
             background-color: $co_darkest;
         }
     }
+
     button.ico_action[type=reset]{
         @include animation(1000ms, fadein, linear);
     }
 }
 
 ul li{
+    display: block;
     .rowitem{
         display: block;
         float: left;
@@ -130,33 +142,71 @@ ul li{
     }
     &> div{
         @include clearfix;
+        display: inline-block;
+        vertical-align: top;
+        &:hover{
+            .menu_icon{
+                opacity: 1;
+            }
+        }
     }
 }
 
 ul li .menu{
-    margin-left: .3em;
-    width: 3 * $btn_size;
-    height: $btn_size;
-    .menu_hint{
-        $thickness: 1px;
-        width: 100%;
-        height: rem($btn_size - $thickness);
-        border-bottom: rem($thickness) solid $co_gray;
+    margin-left: rem($btn_size);
+    width: 3 * $lbtn_size;
+    height: $lbtn_size;
+    @include largescreen{
+        width: 3 * $btn_size;
+        height: $btn_size;
+    }
+    .menu_icon{
+        opacity: 0;
+        transition: opacity 200ms ease-in-out;
+        $icon_height: 0.8 * $btn_size;
+        margin-top: rem(($btn_size - $icon_height) / 2);
+        box-sizing: border-box;
+        border-top: rem(2px) solid $co_gray;
+        border-bottom: rem(2px) solid $co_gray;
+        height: $icon_height;
+        width: $btn_size;
+        &:after{
+            content: '';
+            display: block;
+            position: relative;
+            z-index: 0;
+            top: rem(($icon_height - 6px)/2);
+            width: 100%;
+            height: rem(2px);
+            background-color: $co_gray;
+        }
+    }
+    .selected{
+        opacity: 1;
     }
     .menu_item{
+        border-left: rem(2px) solid $co_darkest;
         display: none;
         position: relative;
-        background-color: $co_gray;
-        height: 1.5 * $btn_size;
+        z-index: 1;
+        background-color: $co_body_bg;
+        height: 1.5 * $lbtn_size;
+        @include largescreen{
+            height: 1.5 * $btn_size;
+        }
+        .ico_action{
+            line-height: $lbtn_size;
+        }
     }
-    &:hover{
+    .dark{
+        border: none;
+        $size: $btn_size;
+        background-color: transparent;
+        height: $size;
+    }
+    .show{
         .menu_item{
             display: block;
-        }
-        .menu_hint{
-            $thickness: 0.5 * $btn_size;
-            height: rem($btn_size - $thickness);
-            border-bottom: rem($thickness) solid $co_darkest;
         }
     }
     form{
@@ -166,9 +216,14 @@ ul li .menu{
         width: 100%;
         display: block;
         height: 100%;
-        color: $co_body_bg;
+        color: $co_darkest;
         &:hover{
             background-color: $co_strong;
+            color: $co_body_bg;
         }
     }
+}
+
+footer{
+    height: rem(200px);
 }

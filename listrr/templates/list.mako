@@ -7,25 +7,24 @@
                         ${li.title | h}
                     </div>
                     <div class="rowitem menu">
-                        <div class="menu_hint"></div>
+                        <div class="menu_icon"></div>
+                        <div class="menu_item dark"></div>
                         <div class="menu_item">
                             <form class="del_item_form" action="${request.route.find('api', (li.id,))}" method="DELETE">
                                 <button type="submit" class="ico_action">&times;</button>
                             </form>
                         </div>
                         <div class="menu_item">
-                            <form class="del_item_form" action="${request.route.find('api', (li.id,))}" method="DELETE">
-                                <button type="submit" class="ico_action">&times;</button>
+                            <a class="ico_action" href="${request.route.find('list', (li.id,))}">&#x2693;</a>
+                        </div>
+                        <div class="menu_item">
+                            <form class="del_item_form" action="${request.route.find('api')}" method="DELETE">
+                                <button type="submit" class="ico_action">✐</button>
                             </form>
                         </div>
                         <div class="menu_item">
-                            <form class="del_item_form" action="${request.route.find('api', (li.id,))}" method="DELETE">
-                                <button type="submit" class="ico_action">&times;</button>
-                            </form>
-                        </div>
-                        <div class="menu_item">
-                            <form class="del_item_form" action="${request.route.find('api', (li.id,))}" method="DELETE">
-                                <button type="submit" class="ico_action">&times;</button>
+                            <form class="del_item_form" action="${request.route.find('api')}" method="DELETE">
+                                <button type="submit" class="ico_action">&#x25ef;</button>
                             </form>
                         </div>
                     </div>
@@ -37,9 +36,9 @@
         %endfor
         <li>
             <form action="${request.route.find('api', (parent.id,))}" method="POST" class="new_item_form">
-                <input style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
+                <input class="js_animated" style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
                 <button title="Add a list item" class="ico_action" disabled>+</button>
-                <button title="Cancel" class="ico_action" type="reset" style="display: none">&times;</button>
+                <button title="Cancel" class="ico_action js_animated" type="reset" style="display: none">&times;</button>
             </form>
         </li>
     </ul>
@@ -60,11 +59,12 @@
         <div data-js_template_name="list_item" data-js_template_fieldname="content" data-js_template_fieldtype="append"></div>
         <li data-js_template_name="li_form">
             <form data-js_template_fieldname="action" data-js_template_fieldtype="setattr" method="POST" class="new_item_form">
-                <input style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
+                <input class="js_animated" style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
                 <button title="Add a list item" class="ico_action" type="submit" disabled>+</button>
                 <button title="Cancel" class="ico_action" type="reset" style="display: none">&#x2716;</button>
             </form>
         </li>
     </div>
+    <footer></footer>
 </body>
 </html>

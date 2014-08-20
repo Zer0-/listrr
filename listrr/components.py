@@ -78,7 +78,10 @@ class Api:
         response.text = request.route.find('list', (new_id,))
 
     def DELETE(self, request, response):
-        list_id = request.route.vars[0]
+        vars = request.route.vars
+        if not vars:
+            return HTTPNotFound()
+        list_id = vars[0]
         del_result = self.listapi.remove_list_item(list_id)
         if not del_result:
             return HTTPNotFound()

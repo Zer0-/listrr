@@ -11,7 +11,7 @@
     <span class="tagline">Simple, nested task list.</span>
     <section id="action">
         <form action="${request.route.find('api')}" method="POST">
-            <input style="display: none" placeholder="e.g. TODO Chores" type="text" name="title">
+            <input class="js_animated" style="display: none" placeholder="e.g. TODO Chores" type="text" name="title">
             <button id="main_button" disabled>Create List</button>
         </form>
     </section>

@@ -1,6 +1,7 @@
 bind_initial_btn_submit = (elems, jx_ok_callback, submit_callback) ->
     elems.btn_submit.removeAttr 'disabled'
-    elems.btn_submit.click ->
+    elems.btn_submit.click (e) ->
+        e.preventDefault()
         form_setup elems, jx_ok_callback, submit_callback
         elems.btn_submit.unbind()
         elems.btn_submit.attr 'type', 'submit'
@@ -8,6 +9,17 @@ bind_initial_btn_submit = (elems, jx_ok_callback, submit_callback) ->
 bind_btn_reset = (elems, jx_ok_callback, submit_callback) ->
     elems.btn_reset.click ->
         form_teardown elems
+        #recreated animated elements
+        play = $ '.js_animated', elems.form
+        play.removeClass 'play'
+        play.each ->
+            elem = $ @
+            clone = elem.clone()
+            for name, value of elems
+                if value[0] == elem[0]
+                    elems[name] = clone
+                    break
+            elem.replaceWith clone
         bind_initial_btn_submit elems, jx_ok_callback, submit_callback
 
 form_setup = (elems, jx_ok_callback, submit_callback) ->
@@ -18,6 +30,8 @@ form_setup = (elems, jx_ok_callback, submit_callback) ->
     disable()
     elems.txt_input.show()
     elems.btn_reset.show()
+    play = $ '.js_animated', elems.form
+    play.addClass 'play'
     bind_btn_reset elems, jx_ok_callback, submit_callback
     bind_form_submit elems, jx_ok_callback, submit_callback
     validator = ->

@@ -6,12 +6,14 @@
     -webkit-animation-name: $animation;
     -webkit-animation-timing-function: $timing;
     -webkit-animation-fill-mode: forwards;
+    -webkit-animation-play-state: paused;
  
     animation-delay: $delay;
     animation-duration: $duration;
     animation-name: $animation;
     animation-timing-function: $timing;
     animation-fill-mode: forwards;
+    animation-play-state: paused;
 }
 
 @mixin keyframes($name){
@@ -33,4 +35,17 @@
     display: table;
     clear: both;
   }
+}
+
+@mixin play{
+    .play{
+        -webkit-animation-play-state: running !important;
+        animation-play-state: running !important;
+    }
+}
+
+@mixin largescreen{
+    @media all and (min-width: $breakpoint) {
+        @content;
+    }
 }

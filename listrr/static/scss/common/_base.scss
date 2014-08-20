@@ -1,7 +1,11 @@
 @import "common/var";
+@import "common/mixins";
 
 body{
     background-color: $co_body_bg;
     color: $co_darkest;
     font-family: sans-serif;
 }
+
+@include play;
+

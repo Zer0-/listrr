@@ -1,7 +1,7 @@
 initialize_del_form = (form) ->
     jx_ok_callback = ->
-        li_elem = form.parent()
-        li_elem.remove()
+        li_elem = form.closest 'li'
+        li_elem.fadeOut 'normal', li_elem.remove
     response_handlers =
         load: (evt) ->
             xhr = @
@@ -19,6 +19,7 @@ initialize_del_form = (form) ->
     form.submit (e) ->
         e.preventDefault()
         send_form form, response_handlers
+        $("button[type=submit]", form).attr "disabled", "disabled"
 
 initialize_li_form = (form) ->
     form_action = form.attr 'action'
@@ -38,6 +39,22 @@ initialize_li_form = (form) ->
         new_li_title = title
     init_miniform form, ajax_callback, submit_callback
 
+initialize_menu = (menu) ->
+    toggle_elems = $ ".menu_item", menu
+    bind_window = ->
+        window_click = ->
+            $(".menu_icon", menu).toggleClass "selected"
+            toggle_elems.stop()
+            toggle_elems.fadeToggle()
+            $(window).unbind 'click', window_click
+        $(window).click window_click
+
+    $(".menu_icon", menu).click (e) ->
+        toggle_elems.fadeToggle()
+        $(@).toggleClass "selected"
+        e.stopPropagation()
+        bind_window()
+
 $ ->
     forms = $ "form.new_item_form"
     forms.each ->
@@ -48,3 +65,7 @@ $ ->
     forms.each ->
         form = $ @
         initialize_del_form form
+
+    $("li .menu").each ->
+        menu = $ @
+        initialize_menu menu
