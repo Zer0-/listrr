@@ -1,7 +1,16 @@
+#TODO FIX DELETING CLEANUP
 initialize_del_form = (form) ->
     jx_ok_callback = ->
         li_elem = form.closest 'li'
-        li_elem.fadeOut 'normal', li_elem.remove
+        #li_elem.fadeOut 'normal', li_elem.remove
+        console.log li_elem
+        li_elem.remove()
+        ul = li_elem.closest 'ul'
+        children = ul.children 'li'
+        console.log children
+        console.log children.length
+        if ul.children('li').length <= 1
+            ul.fadeOut 'normal', ul.remove
     response_handlers =
         load: (evt) ->
             xhr = @

@@ -2,7 +2,6 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-cd $DIR
 
 function read_setting {
     cat listrr/settings.local.json | \
@@ -11,11 +10,6 @@ function read_setting {
 }
 IN=$(read_setting static_buildout_dir)
 OUT=$(read_setting served_static_dir)
-
-mkdir $OUT
-mkdir $OUT/scss
-rm -rf ./.sass-cache
-rm -rv $OUT/scss/*
 
 collect(){
     cd listrr
@@ -28,5 +22,13 @@ build(){
     sass --style expanded --update $IN/scss:$OUT/scss
 }
 
-collect
-build
+if [ -z "$1" ]; then
+    cd $DIR
+    mkdir $OUT
+    mkdir $OUT/scss
+    rm -rf ./.sass-cache
+    rm -rv $OUT/scss/*
+    collect
+    build
+fi
+
