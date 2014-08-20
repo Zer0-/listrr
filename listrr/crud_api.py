@@ -9,7 +9,7 @@ from listrr.sql import (
 from listrr.listid import gen_list_uuid
 import logging
 
-ListItem = namedtuple('ListItem', 'id, title, time_created, replies')
+ListItem = namedtuple('ListItem', 'id, title, time_created, done, replies')
 
 def _build_list_tree(db_results):
     depth = db_results[0][3]
@@ -17,7 +17,7 @@ def _build_list_tree(db_results):
     path = []
     head = root
     for data in db_results:
-        rdepth = data[3]
+        rdepth = data[4]
         if rdepth > depth:
             depth = rdepth
             path.append(head)

@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS list_item(
     parent_id char(%s) REFERENCES list_item(id) ON DELETE CASCADE,
     time_created timestamp with time zone DEFAULT current_timestamp NOT NULL,
     last_modified timestamp with time zone DEFAULT current_timestamp NOT NULL,
-    title text NOT NULL
+    title text NOT NULL,
+    done boolean NOT NULL DEFAULT false
 );
 """
 
@@ -45,6 +46,7 @@ WITH RECURSIVE t(
     id,
     title,
     time_created,
+    done,
     path,
     depth
 ) AS (
@@ -52,6 +54,7 @@ WITH RECURSIVE t(
         id,
         title,
         time_created,
+        done,
         array[extract(epoch from last_modified)] AS path,
         0 AS depth
     FROM list_item
@@ -63,6 +66,7 @@ WITH RECURSIVE t(
         list_item.id,
         list_item.title,
         list_item.time_created,
+        list_item.done,
         t.path || extract(epoch from list_item.last_modified),
         t.depth + 1
     FROM list_item, t
@@ -72,6 +76,7 @@ SELECT
     id,
     title,
     time_created,
+    done,
     depth
 FROM t ORDER BY path;
 """
