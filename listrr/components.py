@@ -60,6 +60,10 @@ class ListView:
 
 class Api:
     depends_on = [ListApi]
+    valid_statuses = {
+        'true': True,
+        'false': False
+    }
 
     def __init__(self, listapi):
         self.listapi = listapi
@@ -85,3 +89,14 @@ class Api:
         del_result = self.listapi.remove_list_item(list_id)
         if not del_result:
             return HTTPNotFound()
+
+    def PATCH(self, request, response):
+        #Does not do anything yet
+        vars = request.route.vars
+        if not vars:
+            return HTTPNotFound()
+        list_id = vars[0]
+        status_request = request.POST.get('status')#seriously webob wtf is with using POST for everything
+        if status_request not in self.valid_statuses:
+            return HTTPBadRequest('status must be one of true, false')
+        print(status_request, self.valid_statuses[status_request])

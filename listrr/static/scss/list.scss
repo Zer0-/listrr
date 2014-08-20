@@ -151,6 +151,13 @@ ul li{
             }
         }
     }
+    .title{
+        cursor: default;
+    }
+    .title.done{
+        text-decoration: line-through;
+        color: $co_gray;
+    }
 }
 
 ul li .menu{

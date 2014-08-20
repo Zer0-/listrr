@@ -31,7 +31,6 @@ initialize_del_form = (form) ->
         $("button[type=submit]", form).attr "disabled", "disabled"
 
 initialize_li_form = (form) ->
-    console.log 'initting form'
     form_action = form.attr 'action'
     new_li_title = undefined
     ajax_callback = (newitem_url) ->
@@ -87,6 +86,12 @@ initialize_menu = (menu) ->
         $(window).click window_click
         btn_menu.unbind()
 
+initialize_status_change = (title) ->
+    url = title.data 'api_url'
+    title.click ->
+        console.log url
+        title.toggleClass 'done'
+
 $ ->
     forms = $ "ul form.new_item_form"
     forms.each ->
@@ -101,3 +106,7 @@ $ ->
     $("li .menu").each ->
         menu = $ @
         initialize_menu menu
+
+    $("li .title").each ->
+        title = $ @
+        initialize_status_change title

@@ -1,16 +1,19 @@
 <%def name="rlist(tree, parent)">
     <ul>
         %for li in tree:
+            <%
+                api_url = request.route.find('api', (li.id,))
+            %>
             <li>
                 <div>
-                    <div class="rowitem title" title="Click to mark off">
+                    <div data-api_url="${api_url}"class="rowitem title" title="Click to mark off">
                         ${li.title | h}
                     </div>
                     <div class="rowitem menu" title="Item menu">
                         <div class="menu_icon"></div>
                         <div class="menu_item dark"></div>
                         <div class="menu_item">
-                            <form class="del_item_form" action="${request.route.find('api', (li.id,))}" method="DELETE">
+                            <form class="del_item_form" action="${api_url}" method="DELETE">
                                 <button type="submit" class="ico_action" title="delete list item">&times;</button>
                             </form>
                         </div>
