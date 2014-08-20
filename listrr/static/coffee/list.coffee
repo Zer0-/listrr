@@ -31,6 +31,7 @@ initialize_del_form = (form) ->
         $("button[type=submit]", form).attr "disabled", "disabled"
 
 initialize_li_form = (form) ->
+    console.log 'initting form'
     form_action = form.attr 'action'
     new_li_title = undefined
     ajax_callback = (newitem_url) ->
@@ -87,7 +88,7 @@ initialize_menu = (menu) ->
         btn_menu.unbind()
 
 $ ->
-    forms = $ "form.new_item_form"
+    forms = $ "ul form.new_item_form"
     forms.each ->
         form = $ @
         initialize_li_form form

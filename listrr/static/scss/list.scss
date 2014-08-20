@@ -120,10 +120,11 @@ form.new_item_form{
         padding: 0 .5em;
         border: none;
         background-color: $co_darkest;
-        color: $co_darkest;
+        color: $co_body_bg;
         outline: none;
         &:focus{
             background-color: $co_gray;
+            color: $co_darkest;
         }
     }
 

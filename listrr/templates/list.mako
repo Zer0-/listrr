@@ -60,8 +60,8 @@
         <li data-js_template_name="li_form">
             <form data-js_template_fieldname="action" data-js_template_fieldtype="setattr" method="POST" class="new_item_form">
                 <input class="js_animated" style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
-                <button title="Add a list item" class="ico_action" type="submit" disabled>+</button>
-                <button title="Cancel" class="ico_action" type="reset" style="display: none">&#x2716;</button>
+                <button title="Add a list item" class="ico_action" disabled>+</button>
+                <button title="Cancel" class="ico_action js_animated" type="reset" style="display: none">&#x2716;</button>
             </form>
         </li>
     </div>
