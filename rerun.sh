@@ -13,6 +13,9 @@ STATIC_DIR=$OUT
 start_appserver_command="../bin/python listrr"
 start_staticserver_command="http-server -p 8888"
 
+#Determine if roxterm is installed on the system - it has nice --tab behaviour
+command -v roxterm >/dev/null 2>&1 && ROXTERM=true || ROXTERM=false
+
 function tabbed_start_application_server {
     roxterm --tab -e "bash -c \"cd $SRC_DIR; $start_appserver_command\"" &
 }
@@ -39,18 +42,19 @@ function start_static_server {
     fi
 }
 
-function get_pid {
-    ps ux | grep "$1" | head -n1 | awk '{print $2}'
+function find_and_kill {
+    pid=$(ps ux | grep "$1" | grep -v grep | head -n1 | awk '{print $2}')
+    if [ $pid ]; then
+        kill $pid
+    fi
 }
 
 function kill_application_server {
-    server_pid=$(get_pid $start_appserver_command)
-    kill $server_pid
+    find_and_kill $start_appserver_command
 }
 
 function kill_static_server {
-    server_pid=$(get_pid $start_staticserver_command)
-    kill $server_pid
+    find_and_kill $start_staticserver_command
 }
 
 function buildstatic {
@@ -63,18 +67,18 @@ function killrunning {
     kill_static_server
 }
 
-command -v roxterm >/dev/null 2>&1 && ROXTERM=true || ROXTERM=false
 
 function mainloop {
     while true; do
         cd $SRC_DIR
         EVENT=$(inotifywait -r -e create -e delete -e modify listrr)
         CHANGED_FILE=$(echo $EVENT | cut -f3 -d " ")
-        echo $EVENT
         if [[ $CHANGED_FILE =~ ^.+\.py$ ]]; then
+            echo "Python source file changed, restarting application server"
             kill_application_server
             start_application_server
         elif [[ $CHANGED_FILE =~ ^.+\.(scss$|coffee$|css$|js$) ]]; then
+            echo "Static file modified, running build script"
             buildstatic
         fi
     done
@@ -83,7 +87,6 @@ function mainloop {
 trap killrunning EXIT
 start_application_server
 start_static_server
-#uildstatic
+buildstatic
 mainloop
-#will never get to this if inotify works:
-killrunning
+killrunning #here only if mainloop crashed
