@@ -73,12 +73,10 @@ function mainloop {
         cd $SRC_DIR
         EVENT=$(inotifywait -r -e create -e delete -e modify listrr)
         CHANGED_FILE=$(echo $EVENT | cut -f3 -d " ")
-        if [[ $CHANGED_FILE =~ ^.+\.py$ ]]; then
-            echo "Python source file changed, restarting application server"
+        if [[ $CHANGED_FILE =~ ^.+\.(py$|mako$) ]] || [[ $CHANGED_FILE =~ ^settings.*\.json$ ]]; then
             kill_application_server
             start_application_server
         elif [[ $CHANGED_FILE =~ ^.+\.(scss$|coffee$|css$|js$) ]]; then
-            echo "Static file modified, running build script"
             buildstatic
         fi
     done
