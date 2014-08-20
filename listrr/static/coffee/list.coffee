@@ -2,15 +2,15 @@
 initialize_del_form = (form) ->
     jx_ok_callback = ->
         li_elem = form.closest 'li'
-        #li_elem.fadeOut 'normal', li_elem.remove
-        console.log li_elem
-        li_elem.remove()
+        remelem = li_elem
+
+        #determine if entire list needs to be removed too
         ul = li_elem.closest 'ul'
         children = ul.children 'li'
-        console.log children
-        console.log children.length
-        if ul.children('li').length <= 1
-            ul.fadeOut 'normal', ul.remove
+        if children.length <= 2 and ul[0] != $('body>ul')[0]
+            remelem = ul
+        remelem.fadeOut 'normal', ->
+            remelem.remove()
     response_handlers =
         load: (evt) ->
             xhr = @
