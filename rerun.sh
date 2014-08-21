@@ -71,7 +71,7 @@ function killrunning {
 function mainloop {
     while true; do
         cd $SRC_DIR
-        EVENT=$(inotifywait -r -e create -e delete -e modify listrr)
+        EVENT=$(inotifywait -q -r -e create -e delete -e modify listrr)
         CHANGED_FILE=$(echo $EVENT | cut -f3 -d " ")
         if [[ $CHANGED_FILE =~ ^.+\.(py$|mako$) ]] || [[ $CHANGED_FILE =~ ^settings.*\.json$ ]]; then
             kill_application_server
