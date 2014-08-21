@@ -15,6 +15,10 @@ GET_ROOT_NODE = """
 SELECT id FROM list_item WHERE parent_id IS NULL
 """
 
+GET_LIST_ITEM = """
+SELECT * FROM list_item WHERE id = %s
+"""
+
 ADD_LIST_ITEM = """
 INSERT INTO list_item (
     id,
@@ -38,7 +42,11 @@ UPDATE list_item SET last_modified=DEFAULT WHERE id IN (SELECT id FROM t);
 """
 
 UPDATE_ITEM_TITLE = """
-UPDATE list_item SET title = %s WHERE id = %s
+UPDATE list_item SET title = %s WHERE id = %s RETURNING id
+"""
+
+UPDATE_ITEM_DONE_STATE = """
+UPDATE list_item SET done = %s WHERE id = %s RETURNING id
 """
 
 GET_LIST_TREE = """

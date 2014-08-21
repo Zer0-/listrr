@@ -5,14 +5,20 @@ from listrr.sql import (
     GET_LIST_TREE,
     UPDATE_ITEM_TITLE,
     DELETE_LIST_ITEM,
+    GET_LIST_ITEM,
+    UPDATE_ITEM_DONE_STATE,
 )
 from listrr.listid import gen_list_uuid
 import logging
 
 ListItem = namedtuple('ListItem', 'id, title, time_created, done, replies')
+FullListItem = namedtuple('FullListItem', 'id, parent_id, time_created, last_modified, title, done')
+
+class ItemNotFound(Exception):
+    pass
 
 def _build_list_tree(db_results):
-    depth = db_results[0][3]
+    depth = db_results[0][4]
     root = []
     path = []
     head = root
@@ -30,6 +36,11 @@ def _build_list_tree(db_results):
         head.append(post)
         last_elem = post.replies
     return root
+
+def _traverse_tree(tree, fn):
+    for child in tree:
+        fn(child)
+        _traverse_tree(child.replies, fn)
 
 class ListApi:
     requires_configured = ['sql_database', 'json_settings']
@@ -74,8 +85,64 @@ class ListApi:
         with self.db.cursor as cursor:
             cursor.execute(DELETE_LIST_ITEM, (item_id,))
             result = cursor.fetchone()
-        return result is not None
+            if result is None:
+                raise ItemNotFound("Item with id {} does not exist."
+                                   " Cannot remove.".format(item_id))
 
-    def update_list_item_title(self, list_id, newtitle):
+    def update_list_item_title(self, item_id, newtitle):
         with self.db.cursor as cursor:
-            cursor.execute(UPDATE_ITEM_TITLE, (newtitle, list_id))
+            cursor.execute(UPDATE_ITEM_TITLE, (newtitle, item_id))
+            result = cursor.fetchone()
+            if result is None:
+                raise ItemNotFound("Item with id {} does not exist."
+                                   " Cannot update title.".format(item_id))
+
+    def get_list_item(self, item_id):
+        with self.db.cursor as cursor:
+            cursor.execute(GET_LIST_ITEM, (item_id,))
+            result = cursor.fetchone()
+            if result is None:
+                raise ItemNotFound("Item with id {} does not exist."
+                                   " Cannot fetch item.".format(item_id))
+        return FullListItem._make(result)
+
+    def mark_done(self, item_id):
+        """
+        Marks an item as done if it's children are marked done.
+        Also marks it's parent complete if all of the parent's
+        children are now complete.
+        """
+        item = self.get_list_item(item_id)
+        parent_id = item.parent_id
+        if parent_id is None:
+            return []
+        tree = self.get_list_tree(parent_id)
+        parent_item = tree[0]
+        for child in parent_item.replies:
+            if child.id == item_id:
+                our_item = child
+                break
+        all_done = True
+        #here we want to see if every child of our item,
+        #being the list item with id item_id, is marked done.
+        #this makes it safe to mark the item done as well.
+        def also_done(list_item):
+            nonlocal all_done
+            all_done = all_done and list_item.done
+        _traverse_tree(our_item.replies, also_done)
+        marked = [item_id]
+        if all_done:
+            with self.db.cursor as cursor:
+                cursor.execute(UPDATE_ITEM_DONE_STATE, (True, item_id))
+            try:
+                marked += self.mark_done(parent_id)
+            except ValueError:
+                pass
+        else:
+            raise ValueError("Cannot mark item with id {} as done: "
+                             "Some children are not marked done.".format(item_id))
+        return marked
+
+    def mark_undone(self, item_id):
+        pass
+

@@ -2,11 +2,24 @@ import unittest
 from bricks import Settings
 from common_components.db import PostgresThreadPool, DatabaseComponent
 
-from listrr.crud_api import ListApi
+from listrr.crud_api import ListApi, ItemNotFound
 
 def clear_list_table(db):
     with db.cursor as cursor:
         cursor.execute("DELETE FROM list_item")
+
+def deep_add(listapi, parent_id, depth, n=3):
+    add_count = 0
+    if depth < 1:
+        return add_count
+    for i in range(n):
+        list_item_id = listapi.add_list_item(
+            parent_id,
+            str(depth)*4 + str(i)
+        )
+        add_count += 1
+        add_count += deep_add(listapi, list_item_id, depth-1, n)
+    return add_count
 
 class TestCrud(unittest.TestCase):
     @classmethod
@@ -53,19 +66,7 @@ class TestCrud(unittest.TestCase):
             'root'
         )
         maxdepth = 4
-        add_count = 0
-        def deep_add(parent_id, n):
-            nonlocal add_count
-            if n < 1:
-                return
-            for i in range(3):
-                list_item_id = self.listapi.add_list_item(
-                    parent_id,
-                    str(n)*4 + str(i)
-                )
-                add_count += 1
-                deep_add(list_item_id, n-1)
-        deep_add(list_id, maxdepth)
+        add_count = deep_add(self.listapi, list_id, maxdepth)
         tree = self.listapi.get_list_tree(list_id)[0]
         self.assertEqual(tree.title, "root")
         self.assertEqual(tree.id, list_id)
@@ -88,20 +89,74 @@ class TestCrud(unittest.TestCase):
         list_item = self.listapi.get_list_tree(list_id)[0]
         self.assertEqual(list_item.title, "testupdate")
 
+    def tesetFailUpdate(self):
+        with self.assertRaises(ItemNotFound):
+            self.listapi.update_list_item_title(list_id, "newtitle")
+
     def testDel(self):
         rootnode = self.listapi.get_root_node()
         list_id = self.listapi.add_list_item(
             rootnode,
-            'A test item is a test item'
+            "A test item is a test item"
         )
-        result = self.listapi.remove_list_item(list_id)
-        self.assertTrue(result)
+        self.listapi.remove_list_item(list_id)
         self.assertFalse(self.listapi.get_list_tree(rootnode)[0].replies)
 
     def testNoDel(self):
         rootnode = self.listapi.get_root_node()
-        result = self.listapi.remove_list_item("a" * len(rootnode))
-        self.assertFalse(result)
+        with self.assertRaises(ItemNotFound):
+            self.listapi.remove_list_item('a' * len(rootnode))
+
+    def testGetSingleItem(self):
+        rootnode = self.listapi.get_root_node()
+        text = "A test item is a test item"
+        list_id = self.listapi.add_list_item(
+            rootnode,
+            text
+        )
+        item = self.listapi.get_list_item(list_id)
+        self.assertEqual(item.title, text)
+        self.assertEqual(item.id, list_id)
+        self.assertEqual(item.parent_id, rootnode)
+        self.assertTrue(item.time_created is not None)
+        self.assertTrue(item.last_modified is not None)
+        self.assertFalse(item.done)
+
+    def testSimpleMarkDone(self):
+        rootnode = self.listapi.get_root_node()
+        text = "A test item is a test item"
+        list_id = self.listapi.add_list_item(
+            rootnode,
+            text
+        )
+        result = self.listapi.mark_done(list_id)
+        self.assertEqual(result, [list_id])
+        item = self.listapi.get_list_item(list_id)
+        self.assertTrue(item.done)
+
+    def testDeepMark(self):
+        rootnode = self.listapi.get_root_node()
+        list_id = self.listapi.add_list_item(
+            rootnode,
+            'abbacaa'
+        )
+        deep_add(self.listapi, list_id, 3, 1)
+        tree = self.listapi.get_list_tree(list_id)
+        head = tree[0]
+        a = head.replies[0]
+        b = a.replies[0]
+        c = b.replies[0]
+        marked = self.listapi.mark_done(c.id)
+        self.assertEqual(set(marked), set((list_id, head.id, a.id, b.id, c.id)))
+        tree = self.listapi.get_list_tree(list_id)
+        head = tree[0]
+        a = head.replies[0]
+        b = a.replies[0]
+        c = b.replies[0]
+        self.assertTrue(head.done)
+        self.assertTrue(a.done)
+        self.assertTrue(b.done)
+        self.assertTrue(c.done)
 
     @classmethod
     def tearDownClass(self):
