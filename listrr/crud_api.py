@@ -72,7 +72,10 @@ class ListApi:
         uuid = gen_list_uuid(self.uuid_size)
         with self.db.cursor as cursor:
             cursor.execute(ADD_LIST_ITEM, (uuid, parent_id, title))
-        return uuid
+        items_affected = []
+        if parent_id is not None:
+            items_affected += self.mark_undone(parent_id)
+        return uuid, items_affected
 
     def get_list_tree(self, parent_id):
         with self.db.cursor as cursor:
@@ -88,6 +91,13 @@ class ListApi:
             if result is None:
                 raise ItemNotFound("Item with id {} does not exist."
                                    " Cannot remove.".format(item_id))
+        deleted = [item_id]
+        if result is None:
+            return deleted
+        try:
+            return deleted + self.mark_done(result[0])
+        except ValueError:
+            return deleted
 
     def update_list_item_title(self, item_id, newtitle):
         with self.db.cursor as cursor:

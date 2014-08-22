@@ -3,7 +3,7 @@ from bricks.render import mako_response, json_response
 from bricks.staticfiles import StaticJs
 from bricks.httpexceptions import HTTPBadRequest, HTTPNotFound
 from common_components.static_renderers import Sass, SassLib, Coffee
-from listrr.crud_api import ListApi
+from listrr.crud_api import ListApi, ItemNotFound
 
 class FormBtn:
     depends_on = [
@@ -60,15 +60,16 @@ class ListView:
 
 class Api:
     depends_on = [ListApi]
-    valid_statuses = {
-        'true': True,
-        'false': False
-    }
 
     def __init__(self, listapi):
         self.listapi = listapi
         self.root_id = listapi.get_root_node()
+        self.status_fn_map = {
+            'true': self.listapi.mark_done,
+            'false': self.listapi.mark_undone
+        }
 
+    @json_response
     def POST(self, request, response):
         title = request.POST.get('title')
         if not title:
@@ -78,24 +79,30 @@ class Api:
             parent_id = self.root_id
         else:
             parent_id = vars[0]
-        new_id = self.listapi.add_list_item(parent_id, title)
-        response.text = request.route.find('list', (new_id,))
+        new_id, unmarked = self.listapi.add_list_item(parent_id, title)
+        return (request.route.find('list', (new_id,)), unmarked)
 
+    @json_response
     def DELETE(self, request, response):
         vars = request.route.vars
         if not vars:
             return HTTPNotFound()
         list_id = vars[0]
-        del_result = self.listapi.remove_list_item(list_id)
-        if not del_result:
+        try:
+            return self.listapi.remove_list_item(list_id)
+        except ItemNotFound:
             return HTTPNotFound()
 
+    @json_response
     def PATCH(self, request, response):
         vars = request.route.vars
         if not vars:
-            return HTTPNotFound()
+            raise HTTPNotFound()
         list_id = vars[0]
         status_request = request.POST.get('status')#Yes POST is correct
-        if status_request not in self.valid_statuses:
-            return HTTPBadRequest('status must be one of true, false')
-        return response
+        if status_request not in self.status_fn_map:
+            raise HTTPBadRequest('status must be one of true, false')
+        try:
+            return self.status_fn_map[status_request](list_id)
+        except ValueError:
+            raise HTTPBadRequest('List item depends on children')

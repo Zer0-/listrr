@@ -13,7 +13,7 @@ def deep_add(listapi, parent_id, depth, n=3):
     if depth < 1:
         return add_count
     for i in range(n):
-        list_item_id = listapi.add_list_item(
+        list_item_id, _ = listapi.add_list_item(
             parent_id,
             str(depth)*4 + str(i)
         )
@@ -47,7 +47,7 @@ class TestCrud(unittest.TestCase):
             uuids.add(self.listapi.add_list_item(
                 rootnode,
                 str(i) * 10
-            ))
+            )[0])
         self.assertEqual(len(uuids), 4)
 
         with self.db.cursor as cursor:
@@ -61,7 +61,7 @@ class TestCrud(unittest.TestCase):
 
     def testAddNestedList(self):
         rootnode = self.listapi.get_root_node()
-        list_id = self.listapi.add_list_item(
+        list_id, _ = self.listapi.add_list_item(
             rootnode,
             'root'
         )
@@ -81,7 +81,7 @@ class TestCrud(unittest.TestCase):
 
     def testUpdateTitle(self):
         rootnode = self.listapi.get_root_node()
-        list_id = self.listapi.add_list_item(
+        list_id, _ = self.listapi.add_list_item(
             rootnode,
             'root'
         )
@@ -95,7 +95,7 @@ class TestCrud(unittest.TestCase):
 
     def testDel(self):
         rootnode = self.listapi.get_root_node()
-        list_id = self.listapi.add_list_item(
+        list_id, _ = self.listapi.add_list_item(
             rootnode,
             "A test item is a test item"
         )
@@ -110,7 +110,7 @@ class TestCrud(unittest.TestCase):
     def testGetSingleItem(self):
         rootnode = self.listapi.get_root_node()
         text = "A test item is a test item"
-        list_id = self.listapi.add_list_item(
+        list_id, _ = self.listapi.add_list_item(
             rootnode,
             text
         )
@@ -125,7 +125,7 @@ class TestCrud(unittest.TestCase):
     def testSimpleMarkDone(self):
         rootnode = self.listapi.get_root_node()
         text = "A test item is a test item"
-        list_id = self.listapi.add_list_item(
+        list_id, _ = self.listapi.add_list_item(
             rootnode,
             text
         )
@@ -136,7 +136,7 @@ class TestCrud(unittest.TestCase):
 
     def testDeepMark(self):
         rootnode = self.listapi.get_root_node()
-        list_id = self.listapi.add_list_item(
+        list_id, _ = self.listapi.add_list_item(
             rootnode,
             'abbacaa'
         )
@@ -161,7 +161,7 @@ class TestCrud(unittest.TestCase):
     def testSimpleMarkUndone(self):
         rootnode = self.listapi.get_root_node()
         text = "A test item is a test item"
-        list_id = self.listapi.add_list_item(
+        list_id, _ = self.listapi.add_list_item(
             rootnode,
             text
         )
@@ -174,7 +174,7 @@ class TestCrud(unittest.TestCase):
 
     def testDeepUnMark(self):
         rootnode = self.listapi.get_root_node()
-        list_id = self.listapi.add_list_item(
+        list_id, _ = self.listapi.add_list_item(
             rootnode,
             'abbacaa'
         )
@@ -197,6 +197,7 @@ class TestCrud(unittest.TestCase):
         result = self.listapi.mark_undone(c.id)
         item = self.listapi.get_list_item(list_id)
         self.assertEqual(set(result), set((list_id, head.id, a.id, b.id, c.id)))
+        self.assertEqual(marked, result)
         self.assertFalse(item.done)
 
     @classmethod

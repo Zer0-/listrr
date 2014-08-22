@@ -1,6 +1,5 @@
-#TODO FIX DELETING CLEANUP
 initialize_del_form = (form) ->
-    jx_ok_callback = ->
+    jx_ok_callback = (response) ->
         li_elem = form.closest 'li'
         remelem = li_elem
 
@@ -11,13 +10,17 @@ initialize_del_form = (form) ->
             remelem = ul
         remelem.fadeOut 'normal', ->
             remelem.remove()
+        items_affected = $.parseJSON response
+        for item in items_affected
+            $("#"+item).addClass 'done'
+
     response_handlers =
         load: (evt) ->
             xhr = @
             status = xhr.status
             response = xhr.response
             if status == 200
-                jx_ok_callback()
+                jx_ok_callback response
             else
                 console.log "Server Replied with an error (#{status}):"
                 console.log response
@@ -33,7 +36,8 @@ initialize_del_form = (form) ->
 initialize_li_form = (form) ->
     form_action = form.attr 'action'
     new_li_title = undefined
-    ajax_callback = (newitem_url) ->
+    ajax_callback = (json) ->
+        [newitem_url, items_unmarked] = $.parseJSON json
         data =
             content: new_li_title
         li = form.parent()
@@ -44,6 +48,8 @@ initialize_li_form = (form) ->
         li.after new_elem
         new_form = $ 'form', new_elem
         initialize_li_form new_form
+        for item in items_unmarked
+            $("#"+item).removeClass 'done'
     submit_callback = (title) ->
         new_li_title = title
     init_miniform form, ajax_callback, submit_callback
@@ -86,12 +92,72 @@ initialize_menu = (menu) ->
         $(window).click window_click
         btn_menu.unbind()
 
-initialize_status_change = (title) ->
+initialize_mark_done = (title) ->
     url = title.data 'api_url'
-    title.click ->
-        console.log url
-        title.toggleClass 'done'
+    jx_ok_callback = ->
+        xhr = @
+        if xhr.status != 200
+            console.log 'an error has occurred: '
+            console.log xhr.response
+            title.removeClass 'done'
+            return
+        items_affected = $.parseJSON xhr.response
+        for item in items_affected
+            $("#"+item).addClass 'done'
 
+    title.click ->
+        if title.hasClass 'done'
+            return
+        done = true
+        $(".title", $('ul', title.closest 'li')).each ->
+            done = done and $(@).hasClass 'done'
+        if not done
+            return
+        title.addClass 'done'
+        data = new FormData
+        data.append "status", "true"
+        xhr = new XMLHttpRequest()
+        xhr.open 'PATCH', url
+        xhr.addEventListener 'load', jx_ok_callback, false
+        xhr.addEventListener 'error', jx_ok_callback, false
+        xhr.send data
+
+initialize_mark_undone = (form) ->
+    title = $ '.title:first', form.closest 'li'
+    btn_submit = $ "button[type=submit]", form
+    response_handlers =
+        load: (evt) ->
+            xhr = @
+            if xhr.status != 200
+                console.log 'an error has occurred: '
+                console.log xhr.response
+                title.addClass 'done'
+                return
+            items_affected = $.parseJSON xhr.response
+            for item in items_affected
+                $("#"+item).removeClass 'done'
+        error: (evt) ->
+            console.log "an error has occurred while deleting an item"
+            console.log @
+            console.log evt
+    form.submit (e) ->
+        e.preventDefault()
+        send_form form, response_handlers
+        btn_submit.attr "disabled", "disabled"
+
+    btn_submit.click (e) ->
+        if not title.hasClass 'done'
+            e.preventDefault()
+            return
+        else
+            done = true
+            children = $ ".title", $ 'ul', form.closest 'li'
+            children.each ->
+                done = done and $(@).hasClass 'done'
+            if done and children.length
+                e.preventDefault()
+                return
+            title.removeClass 'done'
 $ ->
     forms = $ "ul form.new_item_form"
     forms.each ->
@@ -103,10 +169,15 @@ $ ->
         form = $ @
         initialize_del_form form
 
+    forms = $ "form.form_mark_undone"
+    forms.each ->
+        form = $ @
+        initialize_mark_undone form
+
     $("li .menu").each ->
         menu = $ @
         initialize_menu menu
 
     $("li .title").each ->
         title = $ @
-        initialize_status_change title
+        initialize_mark_done title

@@ -6,7 +6,7 @@
             %>
             <li>
                 <div>
-                    <div data-api_url="${api_url}"class="rowitem title" title="Click to mark off">
+                    <div id="${li.id}" data-api_url="${api_url}"class="rowitem title${['', ' done'][li.done]}" title="Click to mark off">
                         ${li.title | h}
                     </div>
                     <div class="rowitem menu" title="Item menu">
@@ -26,7 +26,8 @@
                             </form>
                         </div>
                         <div class="menu_item">
-                            <form class="del_item_form" action="${request.route.find('api')}" method="DELETE">
+                            <form class="form_mark_undone" action="${api_url}" method="PATCH">
+                                <input type="hidden" name="status" value="false">
                                 <button type="submit" class="ico_action" title="Revert to unmarked state">&#x25ef;</button>
                             </form>
                         </div>
