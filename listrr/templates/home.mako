@@ -18,8 +18,8 @@
     <a style="position: absolute; bottom: 0" href="/u9zOeImsumoI5Dd_55EBnPR_">rootlink</a>
     <script>
         $(document).ready(function(){
-            init_miniform($('form'), function(url){
-                window.location = url;
+            init_miniform($('form'), function(data){
+                window.location = $.parseJSON(data)[0];
             });
         });
     </script>
