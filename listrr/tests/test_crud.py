@@ -2,7 +2,7 @@ import unittest
 from bricks import Settings
 from common_components.db import PostgresThreadPool, DatabaseComponent
 
-from listrr.crud_api import ListApi, ItemNotFound
+from listrr.crud_api import ListApi, ItemNotFound, UPDATE_ITEM_DONE_STATE
 
 def clear_list_table(db):
     with db.cursor as cursor:
@@ -157,6 +157,47 @@ class TestCrud(unittest.TestCase):
         self.assertTrue(a.done)
         self.assertTrue(b.done)
         self.assertTrue(c.done)
+
+    def testSimpleMarkUndone(self):
+        rootnode = self.listapi.get_root_node()
+        text = "A test item is a test item"
+        list_id = self.listapi.add_list_item(
+            rootnode,
+            text
+        )
+        with self.db.cursor as cursor:
+            cursor.execute(UPDATE_ITEM_DONE_STATE, (True, list_id))
+        result = self.listapi.mark_undone(list_id)
+        self.assertEqual(result, [list_id])
+        item = self.listapi.get_list_item(list_id)
+        self.assertFalse(item.done)
+
+    def testDeepUnMark(self):
+        rootnode = self.listapi.get_root_node()
+        list_id = self.listapi.add_list_item(
+            rootnode,
+            'abbacaa'
+        )
+        deep_add(self.listapi, list_id, 3, 1)
+        tree = self.listapi.get_list_tree(list_id)
+        head = tree[0]
+        a = head.replies[0]
+        b = a.replies[0]
+        c = b.replies[0]
+        marked = self.listapi.mark_done(c.id)
+        tree = self.listapi.get_list_tree(list_id)
+        head = tree[0]
+        a = head.replies[0]
+        b = a.replies[0]
+        c = b.replies[0]
+        self.assertTrue(head.done)
+        self.assertTrue(a.done)
+        self.assertTrue(b.done)
+        self.assertTrue(c.done)
+        result = self.listapi.mark_undone(c.id)
+        item = self.listapi.get_list_item(list_id)
+        self.assertEqual(set(result), set((list_id, head.id, a.id, b.id, c.id)))
+        self.assertFalse(item.done)
 
     @classmethod
     def tearDownClass(self):

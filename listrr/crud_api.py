@@ -106,7 +106,7 @@ class ListApi:
                                    " Cannot fetch item.".format(item_id))
         return FullListItem._make(result)
 
-    def mark_done(self, item_id):
+    def _mark(self, item_id, new_status):
         """
         Marks an item as done if it's children are marked done.
         Also marks it's parent complete if all of the parent's
@@ -116,33 +116,37 @@ class ListApi:
         parent_id = item.parent_id
         if parent_id is None:
             return []
+        if item.done == new_status:
+            return [item_id]
         tree = self.get_list_tree(parent_id)
         parent_item = tree[0]
         for child in parent_item.replies:
             if child.id == item_id:
                 our_item = child
                 break
-        all_done = True
         #here we want to see if every child of our item,
         #being the list item with id item_id, is marked done.
         #this makes it safe to mark the item done as well.
+        all_done = True
         def also_done(list_item):
             nonlocal all_done
             all_done = all_done and list_item.done
         _traverse_tree(our_item.replies, also_done)
         marked = [item_id]
-        if all_done:
+        if not our_item.replies or all_done == new_status:
             with self.db.cursor as cursor:
-                cursor.execute(UPDATE_ITEM_DONE_STATE, (True, item_id))
+                cursor.execute(UPDATE_ITEM_DONE_STATE, (new_status, item_id))
             try:
-                marked += self.mark_done(parent_id)
+                marked += self._mark(parent_id, new_status)
             except ValueError:
                 pass
         else:
-            raise ValueError("Cannot mark item with id {} as done: "
-                             "Some children are not marked done.".format(item_id))
+            raise ValueError()
         return marked
 
+    def mark_done(self, item_id):
+        return self._mark(item_id, True)
+
     def mark_undone(self, item_id):
-        pass
+        return self._mark(item_id, False)
 
