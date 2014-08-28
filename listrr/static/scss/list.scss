@@ -16,7 +16,6 @@ header{
     text-align: center;
     a{
         color: $co_gray;
-        font-size: .8em;
         text-transform: uppercase;
         font-weight: bold;
         text-decoration: none;
@@ -79,7 +78,6 @@ button.ico_action, a.ico_action{
         width: rem($btn_size);
     }
     outline: none;
-    cursor: pointer;
     &:hover{
         background-color: $co_gray;
         color: $co_body_bg;
@@ -136,42 +134,54 @@ form.new_item_form{
 ul li{
     display: block;
     .rowitem{
-        display: block;
-        float: left;
+        display: inline-block;
         padding: 0;
         margin: 0;
     }
     &> div{
-        @include clearfix;
-        display: inline-block;
         vertical-align: top;
         &:hover{
-            .menu_icon{
+            .menu_icon, .btn_mark{
                 opacity: 1;
             }
         }
     }
     .title{
+        white-space: nowrap;
         cursor: default;
     }
-    .title.done{
-        text-decoration: line-through;
-        color: $co_gray;
+    &.done{
+        .title{
+            text-decoration: line-through;
+            color: $co_gray;
+        }
+    }
+    .btn_mark{
+        margin-left: 1em;
+        display: none;
+    }
+    &.leaf:not(.done) .btn_mark{
+        display: inline-block;
+    }
+    .btn_mark, .menu_icon{
+        opacity: 0;
+        transition: opacity 200ms ease-in-out;
+    }
+    .item_body{
+        white-space: nowrap;
+    }
+    .spacer{
+        width: 3 * $lbtn_size;
     }
 }
 
 ul li .menu{
     margin-left: rem($btn_size);
-    width: 3 * $lbtn_size;
-    height: $lbtn_size;
-    @include largescreen{
-        width: 3 * $btn_size;
-        height: $btn_size;
-    }
     .menu_icon{
-        opacity: 0;
-        transition: opacity 200ms ease-in-out;
         $icon_height: 0.8 * $btn_size;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
         margin-top: rem(($btn_size - $icon_height) / 2);
         box-sizing: border-box;
         border-top: rem(2px) solid $co_gray;
@@ -188,13 +198,26 @@ ul li .menu{
             height: rem(2px);
             background-color: $co_gray;
         }
+        &:hover{
+            border-color: $co_darkest;
+            &:after{
+                background-color: $co_darkest;
+            }
+        }
     }
     .selected{
         opacity: 1;
     }
+    .menu_items{
+        float: left;
+        width: 3 * $lbtn_size;
+        height: 0;
+        @include largescreen{
+            width: 3 * $btn_size;
+        }
+    }
     .menu_item{
         border-left: rem(2px) solid $co_darkest;
-        display: none;
         position: relative;
         z-index: 1;
         background-color: $co_body_bg;
@@ -221,9 +244,8 @@ ul li .menu{
         height: $size;
     }
     .show{
-        .menu_item{
-            display: block;
-        }
+        visibility: visible;
+        opacity: 1;
     }
     form{
         height: 100%;

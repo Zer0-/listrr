@@ -6,21 +6,24 @@ bind_initial_btn_submit = (elems, jx_ok_callback, submit_callback) ->
         elems.btn_submit.unbind()
         elems.btn_submit.attr 'type', 'submit'
 
+reset_form = (elems, jx_ok_callback, submit_callback) ->
+    #recreated animated elements
+    play = $ '.js_animated', elems.form
+    play.removeClass 'play'
+    play.each ->
+        elem = $ @
+        clone = elem.clone()
+        for name, value of elems
+            if value[0] == elem[0]
+                elems[name] = clone
+                break
+        elem.replaceWith clone
+    bind_initial_btn_submit elems, jx_ok_callback, submit_callback
+
 bind_btn_reset = (elems, jx_ok_callback, submit_callback) ->
     elems.btn_reset.click ->
         form_teardown elems
-        #recreated animated elements
-        play = $ '.js_animated', elems.form
-        play.removeClass 'play'
-        play.each ->
-            elem = $ @
-            clone = elem.clone()
-            for name, value of elems
-                if value[0] == elem[0]
-                    elems[name] = clone
-                    break
-            elem.replaceWith clone
-        bind_initial_btn_submit elems, jx_ok_callback, submit_callback
+        reset_form elems, jx_ok_callback, submit_callback
 
 form_setup = (elems, jx_ok_callback, submit_callback) ->
     disable = ->
@@ -69,7 +72,8 @@ bind_form_submit = (elems, jx_ok_callback, submit_callback) ->
         if submit_callback?
             submit_callback elems.txt_input.val()
         form_teardown elems
-        elems.btn_submit.attr 'disabled', 'disabled'
+        reset_form elems, jx_ok_callback, submit_callback
+        elems.txt_input.val ''
 
 init_miniform = (form, jx_ok_callback, submit_callback) ->
     elems =
@@ -79,5 +83,6 @@ init_miniform = (form, jx_ok_callback, submit_callback) ->
         btn_reset: $ 'button[type=reset]', form
 
     bind_initial_btn_submit elems, jx_ok_callback, submit_callback
+    return elems
 
 window.init_miniform = init_miniform

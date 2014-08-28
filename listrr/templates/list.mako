@@ -3,42 +3,27 @@
         %for li in tree:
             <%
                 api_url = request.route.find('api', (li.id,))
+                item_url = request.route.find('list', (li.id,))
+                done = 'done' if li.done else ''
+                leaf = '' if li.replies else 'leaf'
             %>
-            <li>
-                <div>
-                    <div id="${li.id}" data-api_url="${api_url}"class="rowitem title${['', ' done'][li.done]}" title="Click to mark off">
+            <li id="${li.id}" data-item_url="${item_url}" data-api_url="${api_url}" class="${done} ${leaf}">
+                <div class="item_body">
+                    <div class="rowitem title">
                         ${li.title | h}
                     </div>
+                    <button title="Click to mark off" class="ico_action rowitem btn_mark">✓</button>
                     <div class="rowitem menu" title="Item menu">
                         <div class="menu_icon"></div>
-                        <div class="menu_item dark"></div>
-                        <div class="menu_item">
-                            <form class="del_item_form" action="${api_url}" method="DELETE">
-                                <button type="submit" class="ico_action" title="delete list item">&times;</button>
-                            </form>
-                        </div>
-                        <div class="menu_item">
-                            <a class="ico_action" href="${request.route.find('list', (li.id,))}" title="Link to dedicated page">&#x2693;</a>
-                        </div>
-                        <div class="menu_item">
-                            <form class="del_item_form" action="${request.route.find('api')}" method="DELETE">
-                                <button type="submit" class="ico_action" title="Edit item text">✐</button>
-                            </form>
-                        </div>
-                        <div class="menu_item">
-                            <form class="form_mark_undone" action="${api_url}" method="PATCH">
-                                <input type="hidden" name="status" value="false">
-                                <button type="submit" class="ico_action" title="Revert to unmarked state">&#x25ef;</button>
-                            </form>
-                        </div>
                     </div>
+                    <div class="rowitem spacer"></div>
                 </div>
                 %if li.replies:
                     ${rlist(li.replies, li)}
                 %endif
             </li>
         %endfor
-        <li>
+        <li class="new_form_container">
             <form action="${request.route.find('api', (parent.id,))}" method="POST" class="new_item_form">
                 <input class="js_animated" style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
                 <button title="Add a list item" class="ico_action" disabled>+</button>
@@ -58,16 +43,51 @@
 <body>
     <header><a href="/">Home</a></header>
     <h1>${head.title | h}</h1>
-    ${rlist(tree, head)}
+    <main>
+        ${rlist(tree, head)}
+    </main>
     <div class="js-templates" style="display: none">
-        <div data-js_template_name="list_item" data-js_template_fieldname="content" data-js_template_fieldtype="append"></div>
-        <li data-js_template_name="li_form">
-            <form data-js_template_fieldname="action" data-js_template_fieldtype="setattr" method="POST" class="new_item_form">
-                <input class="js_animated" style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
-                <button title="Add a list item" class="ico_action" disabled>+</button>
-                <button title="Cancel" class="ico_action js_animated" type="reset" style="display: none">&#x2716;</button>
-            </form>
+        <li
+        data-js_template_name="list_item"
+        data-js_template_fieldtype='setattr, setattr, setattr'
+        data-js_template_fieldname='id, data-item_url, data-api_url'
+        class="leaf">
+            <div class="item_body">
+                <div class="rowitem title" data-js_template_fieldtype='append' data-js_template_fieldname='title'></div>
+                <button title="Click to mark off" class="ico_action rowitem btn_mark">✓</button>
+                <div class="rowitem menu" title="Item menu">
+                    <div class="menu_icon"></div>
+                </div>
+                <div class="rowitem spacer"></div>
+            </div>
         </li>
+        <ul data-js_template_name="list">
+            <li class="new_form_container">
+                <form data-js_template_fieldname="action" data-js_template_fieldtype="setattr" method="POST" class="new_item_form">
+                    <input class="js_animated" style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
+                    <button title="Add a list item" class="ico_action" disabled>+</button>
+                    <button title="Cancel" class="ico_action js_animated" type="reset" style="display: none">&times;</button>
+                </form>
+            </li>
+        </ul>
+        <div data-js_template_name="menu_buttons" class="menu_items">
+            <div class="menu_item dark"></div>
+            <div class="menu_item">
+                <button class="ico_action delete" title="delete list item">&times;</button>
+            </div>
+            <div class="menu_item">
+                <a class="ico_action" data-js_template_fieldtype="setattr" data-js_template_fieldname="href" title="Link to dedicated page">&#x2693;</a>
+            </div>
+            <div class="menu_item" data-js_template_fieldname="sublist" data-js_template_fieldtype="toggle">
+                <button class="ico_action sublist" title="Add a sub-list to this item">+</button>
+            </div>
+            <div class="menu_item">
+                <button class="ico_action" title="Edit item text">✐</button>
+            </div>
+            <div class="menu_item" data-js_template_fieldname="unmark" data-js_template_fieldtype="toggle">
+                <button class="ico_action unmark" title="Revert to unmarked state">&#x25ef;</button>
+            </div>
+        </div>
     </div>
     <footer></footer>
 </body>

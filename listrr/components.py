@@ -80,7 +80,12 @@ class Api:
         else:
             parent_id = vars[0]
         new_id, unmarked = self.listapi.add_list_item(parent_id, title)
-        return (request.route.find('list', (new_id,)), unmarked)
+        return (
+            new_id,
+            request.route.find('list', (new_id,)),
+            request.route.find('api', (new_id,)),
+            unmarked
+        )
 
     @json_response
     def DELETE(self, request, response):

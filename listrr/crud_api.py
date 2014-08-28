@@ -92,8 +92,6 @@ class ListApi:
                 raise ItemNotFound("Item with id {} does not exist."
                                    " Cannot remove.".format(item_id))
         deleted = [item_id]
-        if result is None:
-            return deleted
         try:
             return deleted + self.mark_done(result[0])
         except ValueError:
