@@ -61,13 +61,18 @@
                 <div class="rowitem spacer"></div>
             </div>
         </li>
+        <form
+            data-js_template_name="item_form"
+            data-js_template_fieldtype="setattr, setattr"
+            data-js_template_fieldname="action, method"
+            method="POST"
+            class="new_item_form">
+            <input class="js_animated" style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
+            <button title="Add a list item" class="ico_action" disabled>+</button>
+            <button title="Cancel" class="ico_action js_animated" type="reset" style="display: none">&times;</button>
+        </form>
         <ul data-js_template_name="list">
             <li class="new_form_container">
-                <form data-js_template_fieldname="action" data-js_template_fieldtype="setattr" method="POST" class="new_item_form">
-                    <input class="js_animated" style="display: none" placeholder="e.g. Mop Floors" type="text" name="title">
-                    <button title="Add a list item" class="ico_action" disabled>+</button>
-                    <button title="Cancel" class="ico_action js_animated" type="reset" style="display: none">&times;</button>
-                </form>
             </li>
         </ul>
         <div data-js_template_name="menu_buttons" class="menu_items">
@@ -82,7 +87,7 @@
                 <button class="ico_action sublist" title="Add a sub-list to this item">+</button>
             </div>
             <div class="menu_item">
-                <button class="ico_action" title="Edit item text">✐</button>
+                <button class="ico_action edit_text" title="Edit item text">✐</button>
             </div>
             <div class="menu_item" data-js_template_fieldname="unmark" data-js_template_fieldtype="toggle">
                 <button class="ico_action unmark" title="Revert to unmarked state">&#x25ef;</button>

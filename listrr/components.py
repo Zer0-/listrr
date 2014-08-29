@@ -87,6 +87,14 @@ class Api:
             unmarked
         )
 
+    def PUT(self, request, response):
+        vars = request.route.vars
+        title = request.POST.get('title')
+        if not title or not vars:
+            raise HTTPBadRequest('No title data!')
+        self.listapi.update_list_item_title(vars[0], title)
+        response.text = "OK"
+
     @json_response
     def DELETE(self, request, response):
         vars = request.route.vars
