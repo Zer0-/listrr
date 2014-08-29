@@ -126,26 +126,32 @@ bind_add_sublist = (li, menu, api_url) ->
         form_elems = init_new_li_form form_container
         bind_sublist_miniform_cancel li, sublist, form_elems
 
-edit_textform_fix = (elems, jx_callback, submit_callback) ->
+edit_textform_fix = (fn_reset, elems, jx_callback, submit_callback) ->
     form_setup elems, jx_callback, submit_callback
     elems.btn_submit.unbind()
     elems.btn_submit.attr 'type', 'submit'
+    elems.btn_reset.unbind()
+    elems.btn_reset.click ->
+        fn_reset()
 
 bind_edit_text = (li, menu, api_url) ->
     $('.edit_text', menu).click ->
         title = $('.title:eq(0)', li)
-        title_text = title.text().trim()
         template_data =
             action: api_url
             method: 'PUT'
         form = from_template 'item_form', template_data
-        title.html form
+        form.addClass 'rowitem'
+        title.replaceWith form
         jx_callback = (data) ->
             return
         submit_callback = (text) ->
             title.html text
+            form.replaceWith title
         form_elems = init_miniform form, jx_callback, submit_callback
-        edit_textform_fix form_elems, jx_callback, submit_callback
+        fn_rest = ->
+            form.replaceWith title
+        edit_textform_fix fn_rest, form_elems, jx_callback, submit_callback
 
 create_item_menu = (li, api_url) ->
     item_url = li.data 'item_url'
