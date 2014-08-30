@@ -7,8 +7,8 @@ requires = [
 ]
 
 links = [
-    'git+ssh://phil@home.volguine.com/usr/share/repositories/common_components.git#egg=common_components',
     'git+https://github.com/Zer0-/bricks.git#egg=bricks',
+    'git+https://github.com/Zer0-/common_components.git#egg=common_components',
 ]
 
 setup(
