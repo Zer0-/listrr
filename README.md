@@ -3,6 +3,8 @@ listrr
 
 Simple nested task list built with [Bricks](https://github.com/Zer0-/bricks.git)
 
+[Live Site / Demo](http://listrr.frontalgaming.com/)
+
 Users may create semi-private lists - lists are created with a url that's impossible to guess so only
 anyone that knows the url will see your list.
 
@@ -36,15 +38,17 @@ cd listrr_environment
 
 clone the repo
 
-`git clone https://github.com/Zer0-/bricks.git`
-
-`cd bricks`
+```
+git clone https://github.com/Zer0-/bricks.git
+cd bricks
+```
 
 initialize the submodules
 
-`git submodule init`
-
-`git submodule update`
+```
+git submodule init
+git submodule update
+```
 
 run the setup
 
@@ -57,10 +61,9 @@ to fill in your settings or preferrably copy it to a file named settings.local.j
 and not be tracked by git.
 
 (Note: there's a bit of a bug right now in the order of which Bricks [the library listrr depends on] looks for settings.
-It will try to use the default settings file in the source directory before checking the current working directory for settings.local.json so at the moment it's best to leave the settings.local.json file in the source folder)
+It will try to use the settings.json file in the main module's directory before checking the current working directory for settings.local.json so at the moment it's best to leave the settings.local.json file in the listrr source directory (listrr/listrr))
 
-listrr looks for settings file first in the same directory as the main module (so the source directory) or the current
-working directory.
+listrr checks the main module's directory (in this case the source directory listrr/listrr) or the current working directory for settings files settings.local.json or settings.json. In that order.
 
 `list_uuid_size` affects the size of the generated url. A value between 5 and 10 is sane. Any lower is secure
 and any higher will yield needlessly long urls.
@@ -70,8 +73,7 @@ will move any static assets that need to be compiled.
 
 listrr is not responsible for serving static assets. It assumes there is a server that is serving them on the url under the setting
 `served_static_url`.
-(`python3 -m http.server 8888` will serve the current directory on port 8888. This will do just fine as a static server during development)
- I will touch on how to serve the static assets in development in a bit.
+(`python3 -m http.server 8888` will serve the current directory on port 8888. This will do just fine as a static server during development). More on this in a bit.
 
 ###Running listrr
 
@@ -96,6 +98,8 @@ rerun.sh uses inotify-tools to monitor files for changes so make sure this is in
 static files (there's no good reason for this but you can install it with `npm install -g http-server`). If you have roxterm installed
 it will run each server or build process in a separate tab.
 
+Kill the server (Ctrl+C) and try it out with `./rerun.sh`
+
 
 Footer
 =========
@@ -103,5 +107,5 @@ Footer
 Feel free to hit me at phil.volguine@gmail.com for help.
 
 
-My next project is to document Bricks which is the web framework I created and what listrr uses for routing and other things.
+My next project is to document Bricks which is a web framework I created and what listrr uses for routing and other things.
 So for now everyone is unfortunately stuck code spelunking.
