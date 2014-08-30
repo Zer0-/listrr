@@ -123,7 +123,10 @@ bind_add_sublist = (li, menu, api_url) ->
         li.append sublist
         li.removeClass 'leaf'
         form_container = $ '.new_form_container', sublist
-        form_elems = init_new_li_form form_container
+        [form_elems, jx_callback, submit_callback] = init_new_li_form form_container
+        form_setup form_elems, jx_callback, submit_callback
+        form_elems.btn_submit.unbind()
+        form_elems.btn_submit.attr 'type', 'submit'
         bind_sublist_miniform_cancel li, sublist, form_elems
 
 edit_textform_fix = (fn_reset, elems, jx_callback, submit_callback) ->
@@ -202,7 +205,7 @@ init_new_li_form = (container) ->
         new_li_title = title
 
     form = $ 'form', container
-    return init_miniform form, jx_callback, submit_callback
+    return [init_miniform(form, jx_callback, submit_callback), jx_callback, submit_callback]
 
 init_list_item = (li) ->
     api_url = li.data 'api_url'
