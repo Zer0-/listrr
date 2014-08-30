@@ -4,7 +4,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 
 function read_setting {
-    cat listrr/settings.local.json | \
+    cat $DIR/listrr/settings.local.json | \
     python3 -c \
     "import json,sys;js=json.load(sys.stdin);print(js[\"$1\"])"
 }
