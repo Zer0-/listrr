@@ -15,7 +15,6 @@
             <button id="main_button" disabled>Create List</button>
         </form>
     </section>
-    <a style="position: absolute; bottom: 0" href="/u9zOeImsumoI5Dd_55EBnPR_">rootlink</a>
     <script>
         $(document).ready(function(){
             init_miniform($('form'), function(data){
