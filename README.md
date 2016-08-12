@@ -3,7 +3,7 @@ listrr
 
 Simple nested task list built with [Bricks](https://github.com/Zer0-/bricks.git)
 
-[Live Site / Demo](http://listrr.volguine.com/)
+[Live Site / Demo](http://listrr.rpalteline.webfactional.com/)
 
 Users may create semi-private lists - lists are created with a url that's impossible to guess so only
 anyone that knows the url will see your list.
