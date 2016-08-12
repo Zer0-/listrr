@@ -1,8 +1,9 @@
-from bricks import Settings, app_from_routemap, Route
-from bricks.staticfiles import StaticManager
+from bricks import Bricks, Settings, wsgi, Route, BaseMC
+from bricks.static_manager import StaticManager
 from ceramic_forms import And
 from common_components.db import PostgresThreadPool, DatabaseComponent
 from listrr.logger import setup_logger
+from listrr.components import Homepage, ListView, Api
 
 settings = Settings()
 setup_logger(settings['logfile_path'])
@@ -23,7 +24,6 @@ def make_length_verifier():
 
 uuid_length = make_length_verifier()
 
-from listrr.components import Homepage, ListView, Api
 api_route = Route('api', handler=Api)
 routemap = Route('home', handler=Homepage) + {
     uuid_length: Route('list', handler=ListView),
@@ -32,4 +32,13 @@ routemap = Route('home', handler=Homepage) + {
     }
 }
 
-application = app_from_routemap(routemap, components=components)
+class Main(BaseMC):
+    depends_on = [routemap]
+
+bricks = Bricks()
+
+for c in components:
+    bricks.add(c)
+
+main = bricks.add(Main)
+application = wsgi(main)
